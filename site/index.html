@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#154e3e">
+    <meta name="description" content="Project leaderboards for SJTU GC ECE2810J, Fall 2026. Explore results, compare performance, and follow the rankings.">
+    <title>Leaderboard · ECE2810J</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#rankings">Skip to rankings</a>
+    <div class="layout">
+      <aside class="sidebar" aria-label="Course navigation">
+        <a class="brand" href="./" aria-label="ECE2810J home"><span class="brand-icon" aria-hidden="true">↗</span><span>ECE2810J<span class="brand-sub">SJTU · GLOBAL COLLEGE</span></span></a>
+        <div class="semester"><span class="status-dot"></span> FALL 2026 <span class="semester-year">26FA</span></div>
+        <div class="nav-label">WORKSPACE</div>
+        <a class="nav-link active" href="#rankings" aria-current="page"><span aria-hidden="true">▥</span> Leaderboard <span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a class="nav-link" href="#about"><span aria-hidden="true">ⓘ</span> About the rankings</a>
+        <div class="sidebar-bottom"><div class="sidebar-note"><span class="note-symbol" aria-hidden="true">✳</span><p>A little competition.<br>A lot of discovery.</p></div><a class="repo-link" href="https://github.com/Doyona/SJTU-GC-ECE2810J-26FA" target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a><span class="sidebar-foot">BUILT TO LEARN. MADE TO COMPARE.</span></div>
+      </aside>
+      <main>
+        <header class="topbar"><span>COURSE WORKSPACE <span class="breadcrumb">/</span> <span class="topbar-page">Leaderboard</span></span><span class="term-label">2026 — FALL SEMESTER</span></header>
+        <div class="content">
+          <section class="intro" aria-labelledby="page-title"><div><p class="eyebrow"><span class="tiny-line"></span> THE COURSE, IN NUMBERS</p><h1 id="page-title">Every iteration counts<span>.</span></h1><p class="intro-description">Explore the results. Find your benchmark. Keep building.</p></div><div class="intro-mark" aria-hidden="true"><span></span><span></span><span></span><span></span><i>↗</i></div></section>
+          <div class="demo-banner" id="demo-banner" hidden><span class="demo-badge">DEMO</span><p>You're viewing sample results. These are fictional teams and scores, not official course grades.</p></div>
+          <section class="board" aria-labelledby="board-title">
+            <div class="board-heading"><div><p class="eyebrow">THE STANDINGS</p><h2 id="board-title">Project leaderboard</h2></div><span class="board-tag"><span class="status-dot"></span><span id="board-status">Loading results</span></span></div>
+            <nav class="project-tabs" id="project-tabs" aria-label="Select project"></nav>
+            <div class="project-heading"><h3 id="project-title">Loading leaderboard…</h3><p id="project-description">Results will appear here shortly.</p></div>
+            <div class="stats" aria-label="Project statistics"><div class="stat"><span class="stat-label">TEAMS ON THE BOARD</span><div><strong id="team-count">—</strong><span class="stat-detail">teams</span></div></div><div class="stat"><span class="stat-label" id="best-label">BEST RESULT</span><div><strong id="best-value">—</strong><span class="stat-detail" id="best-unit"></span></div></div><div class="stat"><span class="stat-label">LAST UPDATED</span><div><strong class="date-value" id="updated-date">—</strong><span class="stat-detail" id="updated-time"></span></div></div></div>
+            <section class="ranking-section" id="rankings" aria-label="Rankings" tabindex="-1"><div class="toolbar"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="Search teams or members…" aria-label="Search teams or members" autocomplete="off"><kbd aria-hidden="true">/</kbd></label><div class="toolbar-right"><span id="result-count" role="status" aria-live="polite"></span><button class="export-button" id="export" type="button" disabled><span aria-hidden="true">↓</span> Export CSV</button></div></div><div class="table-scroll"><table id="leaderboard"><caption class="sr-only" id="table-caption">Project rankings</caption><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div><div class="empty-state" id="empty-state" role="status" hidden><span aria-hidden="true">⌕</span><h3>No matching teams</h3><p>Try another team name or member.</p><button id="clear-search" type="button">Clear search</button></div><div class="error-state" id="error-state" role="alert" hidden><h3>Results couldn't be loaded</h3><p id="error-message"></p><button id="retry" type="button">Try again</button></div><div class="table-footer"><span id="ranking-note">Loading ranking rules…</span><span class="footer-mark" aria-hidden="true">↗</span></div></section>
+          </section>
+          <section class="about" id="about" aria-labelledby="about-title"><span class="about-icon" aria-hidden="true">ⓘ</span><div><h2 id="about-title">A note on the rankings</h2><p id="about-description">Rankings are calculated from each project's published results.</p><p>Scores shown here reflect project benchmarks. Refer to the course's official grading policy for final grades.</p></div><span class="about-index" aria-hidden="true">01 / INFO</span></section>
+          <footer class="page-footer"><span>ECE2810J <span class="footer-separator">/</span> Fall 2026</span><span>Always room for one more iteration. <span aria-hidden="true">↗</span></span></footer>
+        </div>
+      </main>
+    </div>
+    <noscript><p class="noscript">Please enable JavaScript to view the leaderboard.</p></noscript>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "demo": true,
+  "updatedAt": "2026-11-04T13:00:00Z",
+  "projects": [
+    {
+      "id": "project-01",
+      "title": "Project 01",
+      "description": "Sample score-based leaderboard · Higher scores take the lead.",
+      "primaryMetric": "score",
+      "metrics": [
+        { "key": "score", "label": "Score", "unit": "pts", "direction": "desc", "decimals": 2 },
+        { "key": "runtime", "label": "Runtime", "unit": "ms", "direction": "asc", "decimals": 1 },
+        { "key": "memory", "label": "Memory", "unit": "MB", "direction": "asc", "decimals": 1 }
+      ],
+      "entries": [
+        { "id": "team-01", "name": "Bit by Bit", "members": ["Member A", "Member B"], "language": "C++", "metrics": { "score": 98.75, "runtime": 12.4, "memory": 8.2 }, "updatedAt": "2026-11-04T12:42:00Z" },
+        { "id": "team-02", "name": "Stack Overflow", "members": ["Member C", "Member D"], "language": "C++", "metrics": { "score": 96.5, "runtime": 14.8, "memory": 9.6 }, "updatedAt": "2026-11-04T11:36:00Z" },
+        { "id": "team-03", "name": "The Iterators", "members": ["Member E", "Member F"], "language": "C", "metrics": { "score": 94.25, "runtime": 16.2, "memory": 7.4 }, "updatedAt": "2026-11-04T10:20:00Z" },
+        { "id": "team-04", "name": "Hello World", "members": ["Member G", "Member H"], "language": "C++", "metrics": { "score": 94.25, "runtime": 18.1, "memory": 10.2 }, "updatedAt": "2026-11-04T09:15:00Z" },
+        { "id": "team-05", "name": "Binary Bloom", "members": ["Member I", "Member J"], "language": "Python", "metrics": { "score": 91.8, "runtime": 32.6, "memory": 18.4 }, "updatedAt": "2026-11-03T14:56:00Z" },
+        { "id": "team-06", "name": "Off by One", "members": ["Member K", "Member L"], "language": "C++", "metrics": { "score": 89.6, "runtime": 21.3, "memory": 11.8 }, "updatedAt": "2026-11-03T13:02:00Z" },
+        { "id": "team-07", "name": "Cache Me If You Can", "members": ["Member M", "Member N"], "language": "C", "metrics": { "score": 87.35, "runtime": 24.7, "memory": 8.9 }, "updatedAt": "2026-11-03T11:48:00Z" },
+        { "id": "team-08", "name": "Next Commit", "members": ["Member O", "Member P"], "language": "Python", "metrics": { "score": 84.9, "runtime": 38.5, "memory": 20.1 }, "updatedAt": "2026-11-03T10:30:00Z" }
+      ]
+    },
+    {
+      "id": "project-02",
+      "title": "Project 02",
+      "description": "Sample performance leaderboard · Lower runtime takes the lead.",
+      "primaryMetric": "runtime",
+      "metrics": [
+        { "key": "runtime", "label": "Runtime", "unit": "ms", "direction": "asc", "decimals": 2 },
+        { "key": "memory", "label": "Memory", "unit": "MB", "direction": "asc", "decimals": 1 }
+      ],
+      "entries": [
+        { "id": "team-01", "name": "Bit by Bit", "members": ["Member A", "Member B"], "language": "C++", "metrics": { "runtime": 8.45, "memory": 6.2 }, "updatedAt": "2026-11-04T12:00:00Z" },
+        { "id": "team-02", "name": "Stack Overflow", "members": ["Member C", "Member D"], "language": "C++", "metrics": { "runtime": 7.82, "memory": 7.8 }, "updatedAt": "2026-11-04T12:05:00Z" },
+        { "id": "team-03", "name": "The Iterators", "members": ["Member E", "Member F"], "language": "C", "metrics": { "runtime": 9.16, "memory": 5.1 }, "updatedAt": "2026-11-04T12:10:00Z" },
+        { "id": "team-06", "name": "Off by One", "members": ["Member K", "Member L"], "language": "C++", "metrics": { "runtime": 10.24, "memory": 8.3 }, "updatedAt": "2026-11-04T12:15:00Z" }
+      ]
+    }
+  ]
+}

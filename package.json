@@ -1,0 +1,12 @@
+{
+  "name": "ece2810j-leaderboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8000 --directory site --bind 127.0.0.1",
+    "test": "node --test",
+    "build": "node scripts/build.mjs"
+  },
+  "engines": { "node": ">=22" }
+}
