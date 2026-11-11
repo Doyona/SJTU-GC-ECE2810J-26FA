@@ -30,7 +30,7 @@ test('published dataset satisfies the schema', () => {
   assert.equal(validateData(published), published);
 });
 
-test('search results accept names, milliseconds, and whole steps and rank by fewest steps', () => {
+test('search results can rank the same entries independently by steps or time', () => {
   const project = {
     ...published.projects[0],
     entries: [
@@ -42,6 +42,8 @@ test('search results accept names, milliseconds, and whole steps and rank by few
   const scores = { ...published, projects: [project] };
   assert.doesNotThrow(() => validateData(scores));
   assert.deepEqual(rankEntries(project).map(({ name, rank }) => [name, rank]), [['李四', 1], ['王五', 1], ['张三', 3]]);
+  const timeBoard = { ...project, primaryMetric: 'searchTime' };
+  assert.deepEqual(rankEntries(timeBoard).map(({ name, rank }) => [name, rank]), [['王五', 1], ['张三', 2], ['李四', 3]]);
   assert.deepEqual(visibleEntries(project, '', 'searchTime').map(entry => entry.name), ['王五', '张三', '李四']);
   assert.equal(visibleEntries(project, '张三')[0].rank, 3);
 

@@ -5,7 +5,7 @@
     {
       "id": "project-01",
       "title": "Project 01",
-      "description": "Search benchmarks ranked by minimum steps.",
+      "description": "Search benchmarks.",
       "primaryMetric": "steps",
       "metrics": [
         { "key": "searchTime", "label": "搜索的时间", "unit": "ms", "direction": "asc", "decimals": 3 },
@@ -18,7 +18,7 @@
     {
       "id": "project-02",
       "title": "Project 02",
-      "description": "Search benchmarks ranked by minimum steps.",
+      "description": "Search benchmarks.",
       "primaryMetric": "steps",
       "metrics": [
         { "key": "searchTime", "label": "搜索的时间", "unit": "ms", "direction": "asc", "decimals": 3 },

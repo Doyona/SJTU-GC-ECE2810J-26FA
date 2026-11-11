@@ -451,6 +451,11 @@ h2 {
 
 .project-heading {
   padding:22px 28px 18px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
 
 .project-heading h3 {
@@ -463,6 +468,32 @@ h2 {
   margin:0;
   color:#85907f;
   font-size:11px;
+}
+
+.ranking-tabs {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.ranking-tab {
+  padding:7px 12px;
+  border:1px solid var(--line);
+  border-radius:5px;
+  background:var(--paper);
+  color:var(--green);
+  font-size:12px;
+}
+
+.ranking-tab:hover {
+  background:var(--light-green);
+}
+
+.ranking-tab[aria-pressed=true] {
+  border-color:var(--green);
+  background:var(--green);
+  color:var(--paper);
+  font-weight:650;
 }
 
 .stats {

@@ -9,8 +9,13 @@ const entryColumns = [
   { key: 'submittedAt', label: '提交时间', direction: 'desc' },
   { key: 'name', label: '姓名' }
 ];
+const rankingLabels = new Map([
+  ['searchTime', { title: '搜索用时榜', best: 'FASTEST SEARCH' }],
+  ['steps', { title: '最短步数榜', best: 'FEWEST STEPS' }]
+]);
 const formatMetric = (value, metric) => value.toLocaleString('en-US', { minimumFractionDigits: metric.decimals, maximumFractionDigits: metric.decimals });
 const metricLabel = metric => metric.unit ? `${metric.label} (${metric.unit})` : metric.label;
+const rankingTitle = metric => rankingLabels.get(metric.key)?.title ?? `${metric.label}榜`;
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -27,8 +32,8 @@ async function load() {
     if (!response.ok) throw new Error(`Request failed (${response.status}).`);
     state.data = validateData(await response.json());
     $('demo-banner').hidden = !state.data.demo;
-    const requested = new URL(location.href).searchParams.get('project');
-    const selected = state.data.projects.find(project => project.id === requested) || state.data.projects[0];
+    const params = new URL(location.href).searchParams;
+    const selected = state.data.projects.find(project => project.id === params.get('project')) || state.data.projects[0];
     $('project-tabs').replaceChildren(...state.data.projects.map((project, index) => {
       const button = element('button', 'project-tab');
       button.type = 'button';
@@ -37,7 +42,7 @@ async function load() {
       button.addEventListener('click', () => selectProject(project));
       return button;
     }));
-    selectProject(selected, false);
+    selectProject(selected, params.get('ranking'), false);
     $('export').disabled = false;
   } catch (error) {
     $('error-state').hidden = false;
@@ -52,31 +57,45 @@ async function load() {
   }
 }
 
-function selectProject(project, updateUrl = true) {
-  state.project = project;
-  state.sortKey = project.primaryMetric;
-  state.direction = project.metrics.find(metric => metric.key === project.primaryMetric).direction;
+function selectProject(project, rankingKey = state.project?.primaryMetric, updateUrl = true) {
   for (const button of $('project-tabs').children) button.setAttribute('aria-current', String(button.dataset.project === project.id));
+  $('project-title').textContent = project.title;
+  $('project-description').textContent = project.description;
+  $('ranking-tabs').replaceChildren(...project.metrics.map(metric => {
+    const button = element('button', 'ranking-tab', rankingTitle(metric));
+    button.type = 'button';
+    button.dataset.ranking = metric.key;
+    button.addEventListener('click', () => selectRanking(project, metric, true));
+    return button;
+  }));
+  $('ranking-tabs').hidden = project.metrics.length < 2;
+  const metric = project.metrics.find(item => item.key === rankingKey) ?? project.metrics.find(item => item.key === project.primaryMetric);
+  selectRanking(project, metric, updateUrl);
+}
+
+function selectRanking(project, metric, updateUrl) {
+  state.project = { ...project, primaryMetric: metric.key };
+  state.sortKey = metric.key;
+  state.direction = metric.direction;
+  for (const button of $('ranking-tabs').children) button.setAttribute('aria-pressed', String(button.dataset.ranking === metric.key));
   if (updateUrl) {
     const url = new URL(location.href);
     url.searchParams.set('project', project.id);
+    url.searchParams.set('ranking', metric.key);
     history.replaceState(null, '', url);
   }
-  $('project-title').textContent = project.title;
-  $('project-description').textContent = project.description;
-  $('table-caption').textContent = `${project.title} rankings`;
-  const ranked = rankEntries(project);
-  const primary = project.metrics.find(metric => metric.key === project.primaryMetric);
+  $('table-caption').textContent = `${project.title} · ${rankingTitle(metric)}`;
+  const ranked = rankEntries(state.project);
   $('board-status').textContent = state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
   $('ranked-count').textContent = ranked.length;
-  $('best-label').textContent = primary.key === 'steps' ? 'FEWEST STEPS' : `BEST ${primary.label.toUpperCase()}`;
-  $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[primary.key], primary) : '—';
-  $('best-unit').textContent = primary.unit;
+  $('best-label').textContent = rankingLabels.get(metric.key)?.best ?? `BEST ${metric.label.toUpperCase()}`;
+  $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[metric.key], metric) : '—';
+  $('best-unit').textContent = metric.unit;
   const updated = new Date(state.data.updatedAt);
   $('updated-date').textContent = dateFormat.format(updated);
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
-  const direction = primary.direction === 'asc' ? '从小到大' : '从大到小';
-  $('ranking-note').textContent = `默认按「${primary.label}」${direction}排列，成绩相同则并列。`;
+  const direction = metric.direction === 'asc' ? '从小到大' : '从大到小';
+  $('ranking-note').textContent = `默认按「${metric.label}」${direction}排列，该项成绩相同则并列。`;
   $('about-description').textContent = '提交时间以北京时间（UTC+8）显示。';
   renderTable();
 }
@@ -164,7 +183,7 @@ $('export').addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
   const link = element('a');
   link.href = url;
-  link.download = `${project.id}-leaderboard.csv`;
+  link.download = `${project.id}-${project.primaryMetric}-leaderboard.csv`;
   document.body.append(link);
   link.click();
   link.remove();
