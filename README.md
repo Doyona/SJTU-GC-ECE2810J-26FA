@@ -2,7 +2,7 @@
 
 SJTU Global College ECE2810J 的静态排行榜，适用于 GitHub Pages。原生 HTML / CSS / JavaScript，无第三方运行时依赖，无需数据库。
 
-> 当前包含两个演示项目，所有队名、成员和成绩均为虚构。页面会显示 **DEMO** 提示。正式使用前请替换数据，并将 `demo` 设为 `false`。
+> 两个项目各保留一条 Baseline。实测成绩公布前，指标栏和名次显示为「—」。
 
 ## 发布到 GitHub Pages
 
@@ -34,7 +34,7 @@ npm run build
 
 ## 更新成绩
 
-只需编辑 [`site/data/leaderboard.json`](site/data/leaderboard.json)，提交并推送到 `main`。
+由课程维护者在 GitHub 编辑 [`site/data/leaderboard.json`](https://github.com/Doyona/SJTU-GC-ECE2810J-26FA/edit/main/site/data/leaderboard.json)。在对应项目的 `entries` 中添加或修改记录，再把文件顶部的 `updatedAt` 更新为带时区的发布时间。改动进入 `main` 后，GitHub Pages 会自动发布。
 
 - `demo`：演示数据为 `true`，真实结果改成 `false`。
 - `updatedAt`：本次数据发布的 ISO 时间戳，需要时区，例如 `2026-11-04T13:00:00Z`。页面统一显示北京时间 UTC+8。
@@ -43,34 +43,30 @@ npm run build
 - `title` / `description`：项目标题和说明。
 - `metrics`：可自定义指标列。`key` 为唯一标识，`label` 为显示名，`unit` 为单位（可为空字符串），`decimals` 为显示小数位数（0–6），`direction` 取 `desc`（越高越好）或 `asc`（越低越好）。
 - `primaryMetric`：决定正式名次的指标 `key`。
-- `entries`：队伍结果；无成绩时使用空数组 `[]`。
+- `entries`：个人成绩记录。
 
-每支队伍的数据示例：
+每条记录的格式如下。
 
 ```json
 {
-  "id": "team-01",
-  "name": "Your team",
-  "members": ["Member A", "Member B"],
-  "language": "C++",
-  "metrics": { "score": 98.75, "runtime": 12.4, "memory": 8.2 },
-  "updatedAt": "2026-11-04T13:00:00Z"
+  "id": "entry-01",
+  "name": "学生姓名",
+  "metrics": { "searchTime": 12.345, "steps": 24 }
 }
 ```
 
-队伍 `id` 在同一项目内必须唯一；每个配置的指标都需要一个非负有限数值。`members` 可以是空数组。请只发布计划公开的成员显示名和成绩。
+记录的 `id` 在同一项目内必须唯一。`name` 是榜单显示的姓名，`searchTime` 是搜索耗时（毫秒），`steps` 是最短步数（非负整数）。
+
+`id` 为 `baseline` 的记录可将 `metrics` 设为 `null`，以显示待填的 Baseline。取得实测数据后，填入 `searchTime` 和 `steps`。
 
 ## 排名与页面功能
 
-- 按 `primaryMetric` 的数值和方向排名，精确相等的结果并列，使用 `1, 2, 2, 4` 名次。并列队伍按 `id` 稳定排列。
-- 显示小数位数仅影响格式，排名使用原始数值；如果不希望四舍五入后看起来相同的结果分属不同名次，请先将源数据舍入到规定精度。
-- 点击排名、队名或指标表头可以切换升降序；更换展示顺序不会改变正式名次。
-- 搜索队名或成员，支持 `/` 快捷键聚焦搜索框。
+- 两个项目默认按最短步数从少到多排名。相同步数并列，名次如 `1, 2, 2, 4`。
+- 点击姓名、搜索用时或其他表头可以切换展示顺序，正式名次保持原样。
+- 支持按姓名搜索，按 `/` 可聚焦搜索框。
 - CSV 导出当前搜索、排序后的结果，保留原始指标精度。
 - 手机适配、键盘操作、空榜和加载失败提示。
 - 通过 URL 的 `project` 参数分享指定项目。
-
-这是展示用静态站点。成绩由仓库维护者更新；提交评测、自动采集和后台管理需要另行接入。字体使用系统字体，页面资源均随仓库发布。
 
 ## 文件结构
 

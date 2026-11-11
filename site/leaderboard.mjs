@@ -22,15 +22,20 @@ export function validateData(data) {
     }
     if (!metrics.has(project.primaryMetric)) fail(`${project.id}: primaryMetric must match a metric key`);
     if (!Array.isArray(project.entries)) fail(`${project.id}: entries must be an array`);
-    const teams = new Set();
+    const entryIds = new Set();
     for (const entry of project.entries) {
-      if (!entry || !isText(entry.id) || teams.has(entry.id)) fail(`${project.id}: team IDs must be unique`);
-      teams.add(entry.id);
-      if (!isText(entry.name) || !Array.isArray(entry.members) || !entry.members.every(isText)) fail(`${project.id}: team name and members are required`);
-      if (!isText(entry.language) || !isDate(entry.updatedAt)) fail(`${project.id}: language and ISO updatedAt are required`);
-      if (!entry.metrics || typeof entry.metrics !== 'object') fail(`${project.id}: team metrics are required`);
+      if (!entry || !isText(entry.id) || entryIds.has(entry.id)) fail(`${project.id}: entry IDs must be unique`);
+      entryIds.add(entry.id);
+      if (!isText(entry.name)) fail(`${project.id}/${entry.id}: name is required`);
+      if (entry.members !== undefined && (!Array.isArray(entry.members) || !entry.members.every(isText))) fail(`${project.id}/${entry.id}: members must be a list of names`);
+      if (entry.language !== undefined && !isText(entry.language)) fail(`${project.id}/${entry.id}: language must be text`);
+      if (entry.updatedAt !== undefined && !isDate(entry.updatedAt)) fail(`${project.id}/${entry.id}: updatedAt must be an ISO timestamp with a timezone`);
+      if (entry.id === 'baseline' && entry.metrics === null) continue;
+      if (!entry.metrics || typeof entry.metrics !== 'object') fail(`${project.id}/${entry.id}: metrics are required`);
       for (const metric of project.metrics) {
-        if (typeof entry.metrics[metric.key] !== 'number' || !Number.isFinite(entry.metrics[metric.key]) || entry.metrics[metric.key] < 0) fail(`${project.id}/${entry.id}: ${metric.key} must be a nonnegative finite number`);
+        const value = entry.metrics[metric.key];
+        if (!Number.isFinite(value) || value < 0) fail(`${project.id}/${entry.id}: ${metric.key} must be a nonnegative finite number`);
+        if (metric.key === 'steps' && !Number.isSafeInteger(value)) fail(`${project.id}/${entry.id}: steps must be a nonnegative whole number`);
       }
     }
   }
@@ -39,7 +44,7 @@ export function validateData(data) {
 
 export function rankEntries(project) {
   const metric = project.metrics.find(item => item.key === project.primaryMetric);
-  const entries = [...project.entries].sort((a, b) => compareMetric(a, b, metric.key, metric.direction));
+  const entries = project.entries.filter(entry => entry.metrics !== null).sort((a, b) => compareMetric(a, b, metric.key, metric.direction));
   let rank = 0;
   return entries.map((entry, index) => {
     if (index === 0 || entry.metrics[metric.key] !== entries[index - 1].metrics[metric.key]) rank = index + 1;
@@ -55,10 +60,13 @@ function compareMetric(a, b, key, direction) {
 export function visibleEntries(project, query = '', sortKey = project.primaryMetric, direction) {
   const metric = project.metrics.find(item => item.key === sortKey);
   const normalized = query.trim().toLocaleLowerCase();
-  const entries = rankEntries(project).filter(entry => `${entry.name} ${entry.members.join(' ')}`.toLocaleLowerCase().includes(normalized));
+  const matches = entry => [entry.name, ...(entry.members ?? [])].join(' ').toLocaleLowerCase().includes(normalized);
+  const entries = rankEntries(project).filter(matches);
   if (metric) entries.sort((a, b) => compareMetric(a, b, sortKey, direction || metric.direction));
   else if (sortKey === 'name') entries.sort((a, b) => (direction === 'desc' ? -1 : 1) * a.name.localeCompare(b.name, 'en') || a.id.localeCompare(b.id, 'en'));
   else if (sortKey === 'rank') entries.sort((a, b) => (direction === 'desc' ? -1 : 1) * (a.rank - b.rank) || a.id.localeCompare(b.id, 'en'));
+  const pendingBaseline = project.entries.find(entry => entry.metrics === null);
+  if (pendingBaseline && matches(pendingBaseline)) entries.push({ ...pendingBaseline, rank: null });
   return entries;
 }
 

@@ -5,6 +5,7 @@ const state = { data: null, project: null, query: '', sortKey: '', direction: ''
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Shanghai' });
 const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' });
 const formatMetric = (value, metric) => value.toLocaleString('en-US', { minimumFractionDigits: metric.decimals, maximumFractionDigits: metric.decimals });
+const metricLabel = metric => metric.unit ? `${metric.label} (${metric.unit})` : metric.label;
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -21,7 +22,6 @@ async function load() {
     if (!response.ok) throw new Error(`Request failed (${response.status}).`);
     state.data = validateData(await response.json());
     $('demo-banner').hidden = !state.data.demo;
-    $('board-status').textContent = state.data.demo ? 'Sample results' : 'Published results';
     const requested = new URL(location.href).searchParams.get('project');
     const selected = state.data.projects.find(project => project.id === requested) || state.data.projects[0];
     $('project-tabs').replaceChildren(...state.data.projects.map((project, index) => {
@@ -62,8 +62,9 @@ function selectProject(project, updateUrl = true) {
   $('table-caption').textContent = `${project.title} rankings`;
   const ranked = rankEntries(project);
   const primary = project.metrics.find(metric => metric.key === project.primaryMetric);
-  $('team-count').textContent = project.entries.length;
-  $('best-label').textContent = `BEST ${primary.label.toUpperCase()}`;
+  $('board-status').textContent = state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
+  $('ranked-count').textContent = ranked.length;
+  $('best-label').textContent = primary.key === 'steps' ? 'FEWEST STEPS' : `BEST ${primary.label.toUpperCase()}`;
   $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[primary.key], primary) : '—';
   $('best-unit').textContent = primary.unit;
   const updated = new Date(state.data.updatedAt);
@@ -71,36 +72,33 @@ function selectProject(project, updateUrl = true) {
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
   const direction = primary.direction === 'asc' ? 'Lower' : 'Higher';
   $('ranking-note').textContent = `Ranked by ${primary.label.toLowerCase()} · ${direction.toLowerCase()} is better · Equal results share a rank`;
-  $('about-description').textContent = `${project.title}: ${direction} ${primary.label.toLowerCase()} is better. Teams with exactly equal primary results share the same rank (1, 2, 2, 4). Sorting a column or searching keeps the original project ranks.`;
+  $('about-description').textContent = `${project.title} ranks entries by ${primary.label.toLowerCase()}. Equal values share a rank (1, 2, 2, 4). Sorting or filtering the table preserves those ranks.`;
   renderTable();
 }
 
 function renderTable() {
   const project = state.project;
   const head = element('tr');
-  const columns = [{ key: 'rank', label: 'Rank' }, { key: 'name', label: 'Team / Members' }, ...project.metrics.map(metric => ({ ...metric, label: `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`, numeric: true })), { key: 'language', label: 'Language', static: true }];
+  const columns = [{ key: 'rank', label: 'Rank' }, { key: 'name', label: 'Name' }, ...project.metrics.map(metric => ({ ...metric, label: metricLabel(metric), numeric: true }))];
   for (const column of columns) {
     const th = element('th', column.numeric ? 'numeric' : '');
     th.scope = 'col';
-    if (column.static) th.textContent = column.label;
-    else {
-      const selected = column.key === state.sortKey;
-      th.setAttribute('aria-sort', selected ? (state.direction === 'asc' ? 'ascending' : 'descending') : 'none');
-      const button = element('button', '', column.label);
-      button.type = 'button';
-      button.dataset.sort = column.key;
-      const arrow = element('span', 'sort-indicator', selected ? (state.direction === 'asc' ? '↑' : '↓') : '↕');
-      arrow.setAttribute('aria-hidden', 'true');
-      button.append(arrow);
-      button.addEventListener('click', () => {
-        state.direction = selected ? (state.direction === 'asc' ? 'desc' : 'asc') : column.direction || 'asc';
-        state.sortKey = column.key;
-        renderTable();
-        // The header is rebuilt when sort state changes; retain keyboard focus.
-        [...$('table-head').querySelectorAll('button')].find(item => item.dataset.sort === column.key)?.focus();
-      });
-      th.append(button);
-    }
+    const selected = column.key === state.sortKey;
+    th.setAttribute('aria-sort', selected ? (state.direction === 'asc' ? 'ascending' : 'descending') : 'none');
+    const button = element('button', '', column.label);
+    button.type = 'button';
+    button.dataset.sort = column.key;
+    const arrow = element('span', 'sort-indicator', selected ? (state.direction === 'asc' ? '↑' : '↓') : '↕');
+    arrow.setAttribute('aria-hidden', 'true');
+    button.append(arrow);
+    button.addEventListener('click', () => {
+      state.direction = selected ? (state.direction === 'asc' ? 'desc' : 'asc') : column.direction || 'asc';
+      state.sortKey = column.key;
+      renderTable();
+      // The header is rebuilt when sort state changes; retain keyboard focus.
+      [...$('table-head').querySelectorAll('button')].find(item => item.dataset.sort === column.key)?.focus();
+    });
+    th.append(button);
     head.append(th);
   }
   $('table-head').replaceChildren(head);
@@ -108,28 +106,27 @@ function renderTable() {
   $('table-body').replaceChildren(...entries.map(entry => {
     const tr = element('tr', entry.rank === 1 ? 'top-team' : '');
     const rank = element('td');
-    rank.append(element('span', `rank${entry.rank <= 3 ? ` rank-${entry.rank}` : ''}`, String(entry.rank).padStart(2, '0')));
-    const team = element('td');
+    const rankClass = entry.rank !== null && entry.rank <= 3 ? `rank rank-${entry.rank}` : 'rank';
+    rank.append(element('span', rankClass, entry.rank === null ? '—' : String(entry.rank).padStart(2, '0')));
+    const name = element('td');
     const cell = element('div', 'team-cell');
     const initials = entry.name.trim().split(/\s+/).slice(0, 2).map(word => Array.from(word)[0]).join('').toUpperCase();
     const avatar = element('span', 'avatar', initials);
     avatar.setAttribute('aria-hidden', 'true');
-    const info = element('span');
-    info.append(element('span', 'team-name', entry.name), element('span', 'team-members', entry.members.join(' · ')));
-    cell.append(avatar, info);
-    team.append(cell);
-    tr.append(rank, team);
-    for (const metric of project.metrics) tr.append(element('td', `numeric${metric.key === project.primaryMetric ? ' metric-primary' : ''}`, formatMetric(entry.metrics[metric.key], metric)));
-    const language = element('td');
-    language.append(element('span', 'language', entry.language));
-    tr.append(language);
+    cell.append(avatar, element('span', 'team-name', entry.name));
+    name.append(cell);
+    tr.append(rank, name);
+    for (const metric of project.metrics) {
+      const value = entry.metrics === null ? '—' : formatMetric(entry.metrics[metric.key], metric);
+      tr.append(element('td', `numeric${metric.key === project.primaryMetric ? ' metric-primary' : ''}`, value));
+    }
     return tr;
   }));
   $('empty-state').hidden = entries.length !== 0;
-  $('empty-state').querySelector('h3').textContent = project.entries.length ? 'No matching teams' : 'The board is ready';
-  $('empty-state').querySelector('p').textContent = project.entries.length ? 'Try another team name or member.' : 'Results will appear after the first scores are published.';
+  $('empty-state').querySelector('h3').textContent = project.entries.length ? 'No matching names' : 'No results yet';
+  $('empty-state').querySelector('p').textContent = project.entries.length ? 'Try another name.' : 'Results appear here after publication.';
   $('clear-search').hidden = !state.query;
-  $('result-count').textContent = `${entries.length} of ${project.entries.length} teams`;
+  $('result-count').textContent = `${entries.length} of ${project.entries.length} entries`;
 }
 
 $('search').addEventListener('input', event => {
@@ -151,8 +148,8 @@ document.addEventListener('keydown', event => {
 });
 $('export').addEventListener('click', () => {
   const project = state.project;
-  const headers = ['Rank', 'Team', 'Members', ...project.metrics.map(metric => `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`), 'Language', 'Updated at'];
-  const rows = visibleEntries(project, state.query, state.sortKey, state.direction).map(entry => [entry.rank, entry.name, entry.members.join('; '), ...project.metrics.map(metric => entry.metrics[metric.key]), entry.language, entry.updatedAt]);
+  const headers = ['Rank', 'Name', ...project.metrics.map(metricLabel)];
+  const rows = visibleEntries(project, state.query, state.sortKey, state.direction).map(entry => [entry.rank ?? '', entry.name, ...project.metrics.map(metric => entry.metrics?.[metric.key] ?? '')]);
   const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
   const link = element('a');

@@ -735,25 +735,10 @@ tr:last-child td {
   font-weight:650;
 }
 
-.team-members {
-  display:block;
-  font-size:11px;
-  color:#7b8772;
-  margin-top:2px;
-}
-
 .metric-primary {
   font-weight:700;
   color:#36582c;
   font-size:13px;
-}
-
-.language {
-  font-size:9px;
-  background:#f1f4ed;
-  padding:3px 7px;
-  border-radius:4px;
-  color:#7e8c71;
 }
 
 .table-footer {
@@ -829,6 +814,11 @@ tr:last-child td {
   line-height:1.8;
   color:#86927b;
   margin:0;
+}
+
+.record-link {
+  color:var(--ink);
+  text-decoration:underline;
 }
 
 .about-index {
