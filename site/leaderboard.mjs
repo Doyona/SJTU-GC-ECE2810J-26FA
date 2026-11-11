@@ -30,6 +30,7 @@ export function validateData(data) {
       if (entry.members !== undefined && (!Array.isArray(entry.members) || !entry.members.every(isText))) fail(`${project.id}/${entry.id}: members must be a list of names`);
       if (entry.language !== undefined && !isText(entry.language)) fail(`${project.id}/${entry.id}: language must be text`);
       if (entry.updatedAt !== undefined && !isDate(entry.updatedAt)) fail(`${project.id}/${entry.id}: updatedAt must be an ISO timestamp with a timezone`);
+      if (entry.submittedAt !== undefined && !isDate(entry.submittedAt)) fail(`${project.id}/${entry.id}: submittedAt must be an ISO timestamp with a timezone`);
       if (entry.id === 'baseline' && entry.metrics === null) continue;
       if (!entry.metrics || typeof entry.metrics !== 'object') fail(`${project.id}/${entry.id}: metrics are required`);
       for (const metric of project.metrics) {
@@ -65,6 +66,14 @@ export function visibleEntries(project, query = '', sortKey = project.primaryMet
   if (metric) entries.sort((a, b) => compareMetric(a, b, sortKey, direction || metric.direction));
   else if (sortKey === 'name') entries.sort((a, b) => (direction === 'desc' ? -1 : 1) * a.name.localeCompare(b.name, 'en') || a.id.localeCompare(b.id, 'en'));
   else if (sortKey === 'rank') entries.sort((a, b) => (direction === 'desc' ? -1 : 1) * (a.rank - b.rank) || a.id.localeCompare(b.id, 'en'));
+  else if (sortKey === 'submittedAt') {
+    const order = direction === 'asc' ? 1 : -1;
+    entries.sort((a, b) => {
+      if (!a.submittedAt) return b.submittedAt ? 1 : 0;
+      if (!b.submittedAt) return -1;
+      return order * (Date.parse(a.submittedAt) - Date.parse(b.submittedAt));
+    });
+  }
   const pendingBaseline = project.entries.find(entry => entry.metrics === null);
   if (pendingBaseline && matches(pendingBaseline)) entries.push({ ...pendingBaseline, rank: null });
   return entries;

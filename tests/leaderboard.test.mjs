@@ -72,6 +72,25 @@ test('sorting by another metric retains original ranks and supports both directi
   assert.equal(visibleEntries(scoreProject, '', 'memory', 'desc')[0].rank, 5);
 });
 
+test('submission times sort chronologically across timezones and leave undated entries last', () => {
+  const project = {
+    ...published.projects[0],
+    entries: [
+      { id: 'entry-a', name: '张三', submittedAt: '2026-11-11T15:00:00+08:00', metrics: { searchTime: 3, steps: 5 } },
+      { id: 'entry-b', name: '李四', submittedAt: '2026-11-11T08:00:00Z', metrics: { searchTime: 4, steps: 9 } },
+      { id: 'entry-c', name: '王五', metrics: { searchTime: 2, steps: 4 } },
+      { id: 'baseline', name: 'Baseline', metrics: null }
+    ]
+  };
+  const scores = { ...published, projects: [project] };
+  assert.doesNotThrow(() => validateData(scores));
+  assert.deepEqual(visibleEntries(project, '', 'submittedAt').map(entry => entry.id), ['entry-b', 'entry-a', 'entry-c', 'baseline']);
+  assert.deepEqual(visibleEntries(project, '', 'submittedAt', 'asc').map(entry => entry.id), ['entry-a', 'entry-b', 'entry-c', 'baseline']);
+
+  project.entries[0].submittedAt = '2026-11-11T15:00:00';
+  assert.throws(() => validateData(scores), /submittedAt must be an ISO timestamp with a timezone/);
+});
+
 test('empty boards are valid and rank without errors', () => {
   const empty = structuredClone(data);
   empty.projects[0].entries = [];

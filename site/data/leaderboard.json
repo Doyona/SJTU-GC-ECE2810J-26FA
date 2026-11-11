@@ -8,8 +8,8 @@
       "description": "Search benchmarks ranked by minimum steps.",
       "primaryMetric": "steps",
       "metrics": [
-        { "key": "searchTime", "label": "Search time", "unit": "ms", "direction": "asc", "decimals": 3 },
-        { "key": "steps", "label": "Minimum steps", "unit": "", "direction": "asc", "decimals": 0 }
+        { "key": "searchTime", "label": "搜索的时间", "unit": "ms", "direction": "asc", "decimals": 3 },
+        { "key": "steps", "label": "他的最短步骤数量", "unit": "", "direction": "asc", "decimals": 0 }
       ],
       "entries": [
         { "id": "baseline", "name": "Baseline", "metrics": null }
@@ -21,8 +21,8 @@
       "description": "Search benchmarks ranked by minimum steps.",
       "primaryMetric": "steps",
       "metrics": [
-        { "key": "searchTime", "label": "Search time", "unit": "ms", "direction": "asc", "decimals": 3 },
-        { "key": "steps", "label": "Minimum steps", "unit": "", "direction": "asc", "decimals": 0 }
+        { "key": "searchTime", "label": "搜索的时间", "unit": "ms", "direction": "asc", "decimals": 3 },
+        { "key": "steps", "label": "他的最短步骤数量", "unit": "", "direction": "asc", "decimals": 0 }
       ],
       "entries": [
         { "id": "baseline", "name": "Baseline", "metrics": null }

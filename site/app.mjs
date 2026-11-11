@@ -4,6 +4,11 @@ const $ = id => document.getElementById(id);
 const state = { data: null, project: null, query: '', sortKey: '', direction: '' };
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Shanghai' });
 const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' });
+const submittedAtFormat = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'Asia/Shanghai' });
+const entryColumns = [
+  { key: 'submittedAt', label: '提交时间', direction: 'desc' },
+  { key: 'name', label: '姓名' }
+];
 const formatMetric = (value, metric) => value.toLocaleString('en-US', { minimumFractionDigits: metric.decimals, maximumFractionDigits: metric.decimals });
 const metricLabel = metric => metric.unit ? `${metric.label} (${metric.unit})` : metric.label;
 function element(tag, className, text) {
@@ -70,16 +75,16 @@ function selectProject(project, updateUrl = true) {
   const updated = new Date(state.data.updatedAt);
   $('updated-date').textContent = dateFormat.format(updated);
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
-  const direction = primary.direction === 'asc' ? 'Lower' : 'Higher';
-  $('ranking-note').textContent = `Ranked by ${primary.label.toLowerCase()} · ${direction.toLowerCase()} is better · Equal results share a rank`;
-  $('about-description').textContent = `${project.title} ranks entries by ${primary.label.toLowerCase()}. Equal values share a rank (1, 2, 2, 4). Sorting or filtering the table preserves those ranks.`;
+  const direction = primary.direction === 'asc' ? '从小到大' : '从大到小';
+  $('ranking-note').textContent = `默认按「${primary.label}」${direction}排列，成绩相同则并列。`;
+  $('about-description').textContent = '提交时间以北京时间（UTC+8）显示。';
   renderTable();
 }
 
 function renderTable() {
   const project = state.project;
   const head = element('tr');
-  const columns = [{ key: 'rank', label: 'Rank' }, { key: 'name', label: 'Name' }, ...project.metrics.map(metric => ({ ...metric, label: metricLabel(metric), numeric: true }))];
+  const columns = [...entryColumns, ...project.metrics.map(metric => ({ ...metric, label: metricLabel(metric), numeric: true }))];
   for (const column of columns) {
     const th = element('th', column.numeric ? 'numeric' : '');
     th.scope = 'col';
@@ -105,9 +110,14 @@ function renderTable() {
   const entries = visibleEntries(project, state.query, state.sortKey, state.direction);
   $('table-body').replaceChildren(...entries.map(entry => {
     const tr = element('tr', entry.rank === 1 ? 'top-team' : '');
-    const rank = element('td');
-    const rankClass = entry.rank !== null && entry.rank <= 3 ? `rank rank-${entry.rank}` : 'rank';
-    rank.append(element('span', rankClass, entry.rank === null ? '—' : String(entry.rank).padStart(2, '0')));
+    const submission = element('td');
+    if (entry.submittedAt) {
+      const time = element('time', '', submittedAtFormat.format(new Date(entry.submittedAt)));
+      time.dateTime = entry.submittedAt;
+      submission.append(time);
+    } else {
+      submission.textContent = '—';
+    }
     const name = element('td');
     const cell = element('div', 'team-cell');
     const initials = entry.name.trim().split(/\s+/).slice(0, 2).map(word => Array.from(word)[0]).join('').toUpperCase();
@@ -115,7 +125,7 @@ function renderTable() {
     avatar.setAttribute('aria-hidden', 'true');
     cell.append(avatar, element('span', 'team-name', entry.name));
     name.append(cell);
-    tr.append(rank, name);
+    tr.append(submission, name);
     for (const metric of project.metrics) {
       const value = entry.metrics === null ? '—' : formatMetric(entry.metrics[metric.key], metric);
       tr.append(element('td', `numeric${metric.key === project.primaryMetric ? ' metric-primary' : ''}`, value));
@@ -148,8 +158,8 @@ document.addEventListener('keydown', event => {
 });
 $('export').addEventListener('click', () => {
   const project = state.project;
-  const headers = ['Rank', 'Name', ...project.metrics.map(metricLabel)];
-  const rows = visibleEntries(project, state.query, state.sortKey, state.direction).map(entry => [entry.rank ?? '', entry.name, ...project.metrics.map(metric => entry.metrics?.[metric.key] ?? '')]);
+  const headers = [...entryColumns.map(column => column.label), ...project.metrics.map(metricLabel)];
+  const rows = visibleEntries(project, state.query, state.sortKey, state.direction).map(entry => [entry.submittedAt ?? '', entry.name, ...project.metrics.map(metric => entry.metrics?.[metric.key] ?? '')]);
   const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
   const link = element('a');

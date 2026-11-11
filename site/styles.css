@@ -627,7 +627,6 @@ th {
 
 th:first-child,td:first-child {
   padding-left:28px;
-  width:82px;
 }
 
 th:last-child,td:last-child {
@@ -678,35 +677,6 @@ tr:last-child td {
 
 .top-team {
   background:#f8fbf4;
-}
-
-.rank {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:25px;
-  height:25px;
-  border-radius:50%;
-  color:#8b9582;
-  font-size:11px;
-}
-
-.rank-1 {
-  background:#e9efce;
-  color:#7c8541;
-  font-weight:700;
-}
-
-.rank-2 {
-  background:#edf0e9;
-  color:#7a8574;
-  font-weight:700;
-}
-
-.rank-3 {
-  background:#f3ede3;
-  color:#a08a65;
-  font-weight:700;
 }
 
 .team-cell {
@@ -1093,7 +1063,6 @@ tr:last-child td {
   }
   th:first-child,td:first-child {
     padding-left:16px;
-    width:55px;
   }
   th:last-child,td:last-child {
     padding-right:16px;
