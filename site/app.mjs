@@ -86,7 +86,7 @@ function selectRanking(project, metric, updateUrl) {
   }
   $('table-caption').textContent = `${project.title} · ${rankingTitle(metric)}`;
   const ranked = rankEntries(state.project);
-  $('board-status').textContent = state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
+  $('board-status').textContent = project.referenceOnly ? 'Latest run snapshots' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
   $('ranked-count').textContent = ranked.length;
   $('best-label').textContent = rankingLabels.get(metric.key)?.best ?? `BEST ${metric.label.toUpperCase()}`;
   $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[metric.key], metric) : '—';
@@ -96,14 +96,14 @@ function selectRanking(project, metric, updateUrl) {
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
   const direction = metric.direction === 'asc' ? '从小到大' : '从大到小';
   $('ranking-note').textContent = `默认按「${metric.label}」${direction}排列，该项成绩相同则并列。`;
-  $('about-description').textContent = '提交时间以北京时间（UTC+8）显示。';
+  $('about-description').textContent = project.referenceOnly ? '仅展示 20/20 验证通过的最新可见运行。结果生成时间以北京时间显示，release 和用例集版本未核对，不作为正式 bonus 名次。' : '提交时间以北京时间（UTC+8）显示。';
   renderTable();
 }
 
 function renderTable() {
   const project = state.project;
   const head = element('tr');
-  const columns = [...entryColumns, ...project.metrics.map(metric => ({ ...metric, label: metricLabel(metric), numeric: true }))];
+  const columns = [...entryColumns.map(column => column.key === 'submittedAt' && project.timeLabel ? { ...column, label: project.timeLabel } : column), ...project.metrics.map(metric => ({ ...metric, label: metricLabel(metric), numeric: true }))];
   for (const column of columns) {
     const th = element('th', column.numeric ? 'numeric' : '');
     th.scope = 'col';
@@ -177,7 +177,7 @@ document.addEventListener('keydown', event => {
 });
 $('export').addEventListener('click', () => {
   const project = state.project;
-  const headers = [...entryColumns.map(column => column.label), ...project.metrics.map(metricLabel)];
+  const headers = [...entryColumns.map(column => column.key === 'submittedAt' && project.timeLabel ? project.timeLabel : column.label), ...project.metrics.map(metricLabel)];
   const rows = visibleEntries(project, state.query, state.sortKey, state.direction).map(entry => [entry.submittedAt ?? '', entry.name, ...project.metrics.map(metric => entry.metrics?.[metric.key] ?? '')]);
   const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));

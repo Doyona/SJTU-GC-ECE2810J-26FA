@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "organization": "ece281s1",
+  "caseCount": 20,
+  "referenceOnly": true,
+  "coverage": {
+    "total": 102,
+    "withResults": 8,
+    "complete": 4,
+    "failedOrIncomplete": 4,
+    "noVisibleResult": 94
+  },
+  "entries": [
+    {
+      "id": "p3-e2ad542fe7ec75a7",
+      "name": "JiChenkai",
+      "submittedAt": "2026-11-18T20:22:16+08:00",
+      "metrics": {
+        "rounds": 5109180,
+        "movementSteps": 7065626
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/JiChenkai523010910127project/issues/6",
+        "runId": "AE34E16B",
+        "configuration": "p3",
+        "commit": "0c2a29a2d5055cc04fe9c32cda6d6668f2419c9d"
+      },
+      "released": null,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-7d7addcf24b7b577",
+      "name": "KanShiyu",
+      "submittedAt": "2026-11-18T11:31:16+08:00",
+      "metrics": {
+        "rounds": 3346464,
+        "movementSteps": 4374277
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/KanShiyu524370910162project/issues/6",
+        "runId": "2D17813A",
+        "configuration": "p3",
+        "commit": "882cafc2aaf0764c809c1009fe2d1aafb0ef0b6e"
+      },
+      "released": null,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-749d82b705e2b083",
+      "name": "LiJinshuo",
+      "submittedAt": "2026-11-18T19:36:28+08:00",
+      "metrics": {
+        "rounds": 3728886,
+        "movementSteps": 4174145
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/LiJinshuo523020910036project/issues/7",
+        "runId": "3C8DC0D6",
+        "configuration": "p3",
+        "commit": "a38fbaf3b66e9bca196762df45e3a65762d5362a"
+      },
+      "released": null,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-dac7401620a1d445",
+      "name": "XieZhuoyang",
+      "submittedAt": "2026-11-18T20:12:09+08:00",
+      "metrics": {
+        "rounds": 5177826,
+        "movementSteps": 7191904
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/XieZhuoyang523010910085project/issues/5",
+        "runId": "C7F70C53",
+        "configuration": "p3",
+        "commit": "fd4e1fc276280522ae28702a67434b8c5c72cccf"
+      },
+      "released": null,
+      "caseSetIdentity": null
+    }
+  ],
+  "updatedAt": "2026-11-18T13:24:00.244866+00:00"
+}

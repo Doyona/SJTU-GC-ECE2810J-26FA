@@ -5,6 +5,7 @@ import { validateData, rankEntries, visibleEntries, csvCell } from '../site/lead
 
 const published = JSON.parse(await readFile(new URL('../site/data/leaderboard.json', import.meta.url), 'utf8'));
 const updatedAt = '2026-11-04T13:00:00Z';
+const legacyProject = { id: 'test-search', title: 'Search tests', description: 'Generic ranking tests', primaryMetric: 'steps', metrics: [{ key: 'searchTime', label: 'Time', unit: 'ms', direction: 'asc', decimals: 3 }, { key: 'steps', label: 'Steps', unit: '', direction: 'asc', decimals: 0 }] };
 const scoreProject = {
   id: 'score-project',
   title: 'Score project',
@@ -32,7 +33,7 @@ test('published dataset satisfies the schema', () => {
 
 test('search results can rank the same entries independently by steps or time', () => {
   const project = {
-    ...published.projects[0],
+    ...legacyProject,
     entries: [
       { id: 'entry-a', name: '张三', metrics: { searchTime: 3.125, steps: 9 } },
       { id: 'entry-b', name: '李四', metrics: { searchTime: 4.75, steps: 7 } },
@@ -76,7 +77,7 @@ test('sorting by another metric retains original ranks and supports both directi
 
 test('submission times sort chronologically across timezones and leave undated entries last', () => {
   const project = {
-    ...published.projects[0],
+    ...legacyProject,
     entries: [
       { id: 'entry-a', name: '张三', submittedAt: '2026-11-11T15:00:00+08:00', metrics: { searchTime: 3, steps: 5 } },
       { id: 'entry-b', name: '李四', submittedAt: '2026-11-11T08:00:00Z', metrics: { searchTime: 4, steps: 9 } },

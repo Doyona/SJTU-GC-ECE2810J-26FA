@@ -1,3 +1,7 @@
 dist/
 node_modules/
 .DS_Store
+
+# Local private API snapshots; publish only sanitized aggregate JSON.
+/data/task3/
+__pycache__/
