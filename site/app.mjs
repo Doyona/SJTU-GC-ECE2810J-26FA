@@ -4,18 +4,18 @@ const $ = id => document.getElementById(id);
 const state = { data: null, project: null, query: '', sortKey: '', direction: '' };
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Shanghai' });
 const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' });
-const submittedAtFormat = new Intl.DateTimeFormat('zh-CN', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'Asia/Shanghai' });
+const submittedAtFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'Asia/Shanghai' });
 const entryColumns = [
-  { key: 'submittedAt', label: '提交时间', direction: 'desc' },
-  { key: 'name', label: '姓名' }
+  { key: 'submittedAt', label: 'Release time', direction: 'desc' },
+  { key: 'name', label: 'Name' }
 ];
 const rankingLabels = new Map([
-  ['searchTime', { title: '搜索用时榜', best: 'FASTEST SEARCH' }],
-  ['steps', { title: '最短步数榜', best: 'FEWEST STEPS' }]
+  ['searchTime', { title: 'Search time', best: 'FASTEST SEARCH' }],
+  ['steps', { title: 'Steps', best: 'FEWEST STEPS' }]
 ]);
 const formatMetric = (value, metric) => value.toLocaleString('en-US', { minimumFractionDigits: metric.decimals, maximumFractionDigits: metric.decimals });
 const metricLabel = metric => metric.unit ? `${metric.label} (${metric.unit})` : metric.label;
-const rankingTitle = metric => rankingLabels.get(metric.key)?.title ?? `${metric.label}榜`;
+const rankingTitle = metric => rankingLabels.get(metric.key)?.title ?? metric.label;
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -31,7 +31,6 @@ async function load() {
     const response = await fetch(new URL('./data/leaderboard.json', import.meta.url), { cache: 'no-cache' });
     if (!response.ok) throw new Error(`Request failed (${response.status}).`);
     state.data = validateData(await response.json());
-    $('demo-banner').hidden = !state.data.demo;
     const params = new URL(location.href).searchParams;
     const selected = state.data.projects.find(project => project.id === params.get('project')) || state.data.projects[0];
     $('project-tabs').replaceChildren(...state.data.projects.map((project, index) => {
@@ -47,10 +46,8 @@ async function load() {
   } catch (error) {
     $('error-state').hidden = false;
     $('project-title').textContent = 'Leaderboard unavailable';
-    $('project-description').textContent = 'Please try again in a moment.';
-    $('error-message').textContent = `Please check the leaderboard data and your connection. ${error.message}`;
+    $('error-message').textContent = error.message;
     $('board-status').textContent = 'Unavailable';
-    $('ranking-note').textContent = 'Results are temporarily unavailable.';
     $('export').disabled = true;
   } finally {
     $('retry').disabled = false;
@@ -60,7 +57,6 @@ async function load() {
 function selectProject(project, rankingKey = state.project?.primaryMetric, updateUrl = true) {
   for (const button of $('project-tabs').children) button.setAttribute('aria-current', String(button.dataset.project === project.id));
   $('project-title').textContent = project.title;
-  $('project-description').textContent = project.description;
   $('ranking-tabs').replaceChildren(...project.metrics.map(metric => {
     const button = element('button', 'ranking-tab', rankingTitle(metric));
     button.type = 'button';
@@ -86,7 +82,7 @@ function selectRanking(project, metric, updateUrl) {
   }
   $('table-caption').textContent = `${project.title} · ${rankingTitle(metric)}`;
   const ranked = rankEntries(state.project);
-  $('board-status').textContent = project.releaseOnly ? 'Released run snapshots' : project.referenceOnly ? 'Latest run snapshots' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
+  $('board-status').textContent = project.releaseOnly ? 'Release results' : project.referenceOnly ? 'Results' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
   $('ranked-count').textContent = ranked.length;
   $('best-label').textContent = rankingLabels.get(metric.key)?.best ?? `BEST ${metric.label.toUpperCase()}`;
   $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[metric.key], metric) : '—';
@@ -94,9 +90,6 @@ function selectRanking(project, metric, updateUrl) {
   const updated = new Date(state.data.updatedAt);
   $('updated-date').textContent = dateFormat.format(updated);
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
-  const direction = metric.direction === 'asc' ? '从小到大' : '从大到小';
-  $('ranking-note').textContent = `默认按「${metric.label}」${direction}排列，该项成绩相同则并列。`;
-  $('about-description').textContent = project.releaseOnly ? '仅收录正式发布 p3 标签触发且已完成的 release 判题。Actions 事件、配置名和 SHA 均已核对，20/20 验证通过才显示总轮数。时间为北京时间，用例集版本仍需课程方确认。' : project.referenceOnly ? '仅展示 20/20 验证通过的最新可见运行。结果生成时间以北京时间显示，release 和用例集版本未核对，不作为正式 bonus 名次。' : '提交时间以北京时间（UTC+8）显示。';
   renderTable();
 }
 
@@ -153,7 +146,6 @@ function renderTable() {
   }));
   $('empty-state').hidden = entries.length !== 0;
   $('empty-state').querySelector('h3').textContent = project.entries.length ? 'No matching names' : project.releaseOnly ? 'No released results yet' : 'No results yet';
-  $('empty-state').querySelector('p').textContent = project.entries.length ? 'Try another name.' : project.releaseOnly ? 'Publish the p3 release and pass all 20 Task 3 cases to appear here.' : 'Results appear here after publication.';
   $('clear-search').hidden = !state.query;
   $('result-count').textContent = `${entries.length} of ${project.entries.length} entries`;
 }

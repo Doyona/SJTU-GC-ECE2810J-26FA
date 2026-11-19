@@ -2,7 +2,7 @@
 
 - src/sync_task3.py --exporter PATH --env-file PATH [--website-root PATH] [--publish]: fetch all visible student Task 3 results; store raw exports under data/task3/, update the two public JSON files, and optionally commit/push website data. Without --publish there are no Git writes.
 - src/sync_task3.py --source-json PATH [--website-root PATH]: offline conversion/verification; cannot be combined with --publish.
-- make_snapshot(source): validate complete collection; require release_only collection and choose latest verified p3-release per student; emit only 20/20 verified released integer lengths and explicit coverage.
+- make_snapshot(source): validate complete collection; require release_only collection and choose one best valid p3-release per student: lowest rounds, then lowest movement steps, then earliest result and run ID. A later failed or worse release cannot replace a better result. Emit only 20/20 verified released integer lengths and explicit coverage.
 - update_files(root, source): validate with the site's actual JavaScript schema before atomic JSON replacement; preserve other projects; no-op for unchanged results.
 - data/task3-leaderboard.json: schemaVersion, organization, caseCount, releaseOnly, referenceOnly, coverage, entries, updatedAt. No token or raw plan content.
 - site/data/leaderboard.json: published website dataset. project-03 primaryMetric rounds; secondary movementSteps; timeLabel explains that the timestamp is result-generation time.

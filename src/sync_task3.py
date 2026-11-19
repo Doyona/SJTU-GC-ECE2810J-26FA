@@ -84,7 +84,7 @@ def make_snapshot(source):
     students = source.get('students')
     if not valid_integer(total) or total == 0 or not isinstance(students, list):
         raise ValueError('Empty or invalid student inventory')
-    latest = {}
+    students_by_repo = {}
     for row in students:
         repo = row.get('repository', '')
         if not repo.startswith('ece281s1/') or not repo.endswith('project'):
@@ -93,30 +93,35 @@ def make_snapshot(source):
             raise ValueError('Stale student result; keep previous published data')
         if row.get('configuration') not in (None, 'p3-release'):
             raise ValueError('Preview configuration cannot enter the release-only website')
-        timestamp = row.get('generated_at') or ''
-        if repo not in latest or timestamp > (latest[repo].get('generated_at') or ''):
-            latest[repo] = row
-    if len(latest) != total:
+        students_by_repo.setdefault(repo, []).append(row)
+    if len(students_by_repo) != total:
         raise ValueError('Student inventory count mismatch')
     entries = []
     counts = {'total': total, 'withResults': 0, 'complete': 0, 'failedOrIncomplete': 0, 'noVisibleResult': 0}
-    for repo, row in sorted(latest.items()):
-        if row['status'] == 'no_release_result':
+    for repo, candidates in sorted(students_by_repo.items()):
+        valid = []
+        for row in candidates:
+            if row['status'] != 'complete_valid':
+                continue
+            if (row.get('released') is not True or row.get('configuration') != 'p3-release'
+                    or row.get('release_event') != 'release' or row.get('release_tag') != 'p3'
+                    or not re.fullmatch(r'(?:\.gitea/workflows/)?release\.ya?ml@refs/tags/p3', row.get('release_workflow') or '')):
+                raise ValueError('Complete result lacks verified P3 release provenance')
+            if row.get('verified_cases') != 20 or row.get('task3_cases') != 20:
+                raise ValueError('Complete result lacks 20 verified cases')
+            if not all(valid_integer(row.get(key)) for key in ('task3_total_rounds', 'task3_total_movement_steps')):
+                raise ValueError('Complete result has missing or invalid length')
+            valid.append(row)
+        if all(row['status'] == 'no_release_result' for row in candidates):
             counts['noVisibleResult'] += 1
             continue
         counts['withResults'] += 1
-        if row['status'] != 'complete_valid':
+        if not valid:
             counts['failedOrIncomplete'] += 1
             continue
-        if (row.get('released') is not True or row.get('configuration') != 'p3-release'
-                or row.get('release_event') != 'release' or row.get('release_tag') != 'p3'
-                or not re.fullmatch(r'(?:\.gitea/workflows/)?release\.ya?ml@refs/tags/p3', row.get('release_workflow') or '')):
-            raise ValueError('Complete result lacks verified P3 release provenance')
-        if row.get('verified_cases') != 20 or row.get('task3_cases') != 20:
-            raise ValueError('Complete result lacks 20 verified cases')
+        row = min(valid, key=lambda candidate: (candidate['task3_total_rounds'],
+                  candidate['task3_total_movement_steps'], candidate.get('generated_at') or '', candidate.get('run_id') or ''))
         rounds, steps = row.get('task3_total_rounds'), row.get('task3_total_movement_steps')
-        if not valid_integer(rounds) or not valid_integer(steps):
-            raise ValueError('Complete result has missing or invalid length')
         generated = row.get('generated_at')
         # Joint-Teapot uses the course host's China Standard Time without an offset.
         stamp = datetime.strptime(generated, '%Y-%m-%d %H:%M:%S').replace(tzinfo=ZoneInfo('Asia/Shanghai')).isoformat()
@@ -130,16 +135,16 @@ def make_snapshot(source):
                         'released': True, 'caseSetIdentity': None})
         counts['complete'] += 1
     return {'schemaVersion': 1, 'organization': 'ece281s1', 'caseCount': 20,
-            'releaseOnly': True, 'referenceOnly': True, 'coverage': counts, 'entries': entries}
+            'releaseOnly': True, 'referenceOnly': True, 'selection': 'best', 'coverage': counts, 'entries': entries}
 
 
 def project_from_snapshot(snapshot):
     return {'id': 'project-03', 'title': 'Project 03 · Task 3',
-            'description': '每小时同步正式发布 p3 标签后触发的判题，仅展示 20 个用例全部通过的 release 结果，不收录预览运行。',
-            'releaseOnly': True, 'referenceOnly': True, 'timeLabel': 'Release 结果时间',
+            'description': 'Project 3 Task 3 results.',
+            'releaseOnly': True, 'referenceOnly': True, 'selection': 'best', 'timeLabel': 'Release time',
             'primaryMetric': 'rounds',
-            'metrics': [{'key': 'rounds', 'label': '同步轮数', 'unit': '轮', 'direction': 'asc', 'decimals': 0},
-                        {'key': 'movementSteps', 'label': '移动步数', 'unit': '步', 'direction': 'asc', 'decimals': 0}],
+            'metrics': [{'key': 'rounds', 'label': 'Rounds', 'unit': '', 'direction': 'asc', 'decimals': 0},
+                        {'key': 'movementSteps', 'label': 'Movement steps', 'unit': '', 'direction': 'asc', 'decimals': 0}],
             'entries': snapshot['entries'], 'coverage': snapshot['coverage']}
 
 

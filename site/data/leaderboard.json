@@ -1,27 +1,28 @@
 {
   "demo": false,
-  "updatedAt": "2026-11-19T08:07:49.742105+00:00",
+  "updatedAt": "2026-11-19T08:52:58.227628+00:00",
   "projects": [
     {
       "id": "project-03",
       "title": "Project 03 · Task 3",
-      "description": "每小时同步正式发布 p3 标签后触发的判题，仅展示 20 个用例全部通过的 release 结果，不收录预览运行。",
+      "description": "Project 3 Task 3 results.",
       "releaseOnly": true,
       "referenceOnly": true,
-      "timeLabel": "Release 结果时间",
+      "selection": "best",
+      "timeLabel": "Release time",
       "primaryMetric": "rounds",
       "metrics": [
         {
           "key": "rounds",
-          "label": "同步轮数",
-          "unit": "轮",
+          "label": "Rounds",
+          "unit": "",
           "direction": "asc",
           "decimals": 0
         },
         {
           "key": "movementSteps",
-          "label": "移动步数",
-          "unit": "步",
+          "label": "Movement steps",
+          "unit": "",
           "direction": "asc",
           "decimals": 0
         }

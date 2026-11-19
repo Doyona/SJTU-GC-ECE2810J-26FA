@@ -4,6 +4,7 @@
   "caseCount": 20,
   "releaseOnly": true,
   "referenceOnly": true,
+  "selection": "best",
   "coverage": {
     "total": 102,
     "withResults": 0,
@@ -12,5 +13,5 @@
     "noVisibleResult": 102
   },
   "entries": [],
-  "updatedAt": "2026-11-19T08:07:49.742105+00:00"
+  "updatedAt": "2026-11-19T08:52:58.227628+00:00"
 }

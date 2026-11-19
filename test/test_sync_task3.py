@@ -58,10 +58,27 @@ class SyncTests(unittest.TestCase):
             data=source(); data['students'][0][key]=value
             with self.assertRaises(ValueError):sync.make_snapshot(data)
 
-    def test_latest_run_wins_even_if_latest_failed(self):
-        data=source(); row=copy.deepcopy(data['students'][0]);row.update(configuration='p3-release',generated_at='2026-11-18 20:00:00',status='invalid_case')
-        data['students'].append(row)
-        self.assertEqual(sync.make_snapshot(data)['entries'],[])
+    def test_best_run_survives_newer_worse_and_failed_results(self):
+        data=source()
+        worse=copy.deepcopy(data['students'][0])
+        worse.update(generated_at='2026-11-18 20:00:00',run_id='RUN2',task3_total_rounds=110)
+        failed=copy.deepcopy(worse)
+        failed.update(generated_at='2026-11-18 21:00:00',run_id='RUN3',status='invalid_case')
+        data['students'].extend([worse,failed])
+        result=sync.make_snapshot(data)
+        self.assertEqual(len(result['entries']),1)
+        self.assertEqual(result['entries'][0]['source']['runId'],'RUN1')
+        self.assertEqual(result['coverage']['complete'],1)
+
+    def test_best_rounds_then_steps_then_earlier_result(self):
+        data=source()
+        fewer_steps=dict(data['students'][0],run_id='RUN2',task3_total_movement_steps=160)
+        later_tie=dict(fewer_steps,run_id='RUN3',generated_at='2026-11-18 20:00:00')
+        data['students'].extend([later_tie,fewer_steps])
+        self.assertEqual(sync.make_snapshot(data)['entries'][0]['source']['runId'],'RUN2')
+        fewer_rounds=dict(data['students'][0],run_id='RUN4',task3_total_rounds=99)
+        data['students'].append(fewer_rounds)
+        self.assertEqual(sync.make_snapshot(data)['entries'][0]['source']['runId'],'RUN4')
 
     def test_publication_refuses_unrelated_staged_files(self):
         def fake_git(root,*args):
