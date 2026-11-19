@@ -76,6 +76,8 @@ def valid_integer(value):
 
 
 def make_snapshot(source):
+    if source.get('release_only') is not True:
+        raise ValueError('Collector must enforce release-only provenance; preview snapshots are rejected')
     if source.get('read_errors') != 0:
         raise ValueError('Incomplete collection: previous published data will be retained')
     total = source.get('student_repositories')
@@ -89,6 +91,8 @@ def make_snapshot(source):
             raise ValueError('Unexpected student repository')
         if row.get('status') in ('read_error', 'stale_after_read_error'):
             raise ValueError('Stale student result; keep previous published data')
+        if row.get('configuration') not in (None, 'p3-release'):
+            raise ValueError('Preview configuration cannot enter the release-only website')
         timestamp = row.get('generated_at') or ''
         if repo not in latest or timestamp > (latest[repo].get('generated_at') or ''):
             latest[repo] = row
@@ -97,13 +101,17 @@ def make_snapshot(source):
     entries = []
     counts = {'total': total, 'withResults': 0, 'complete': 0, 'failedOrIncomplete': 0, 'noVisibleResult': 0}
     for repo, row in sorted(latest.items()):
-        if row['status'] == 'no_p3_result':
+        if row['status'] == 'no_release_result':
             counts['noVisibleResult'] += 1
             continue
         counts['withResults'] += 1
         if row['status'] != 'complete_valid':
             counts['failedOrIncomplete'] += 1
             continue
+        if (row.get('released') is not True or row.get('configuration') != 'p3-release'
+                or row.get('release_event') != 'release' or row.get('release_tag') != 'p3'
+                or not re.fullmatch(r'(?:\.gitea/workflows/)?release\.ya?ml@refs/tags/p3', row.get('release_workflow') or '')):
+            raise ValueError('Complete result lacks verified P3 release provenance')
         if row.get('verified_cases') != 20 or row.get('task3_cases') != 20:
             raise ValueError('Complete result lacks 20 verified cases')
         rounds, steps = row.get('task3_total_rounds'), row.get('task3_total_movement_steps')
@@ -117,17 +125,18 @@ def make_snapshot(source):
                         'name': name or repo.split('/')[1], 'submittedAt': stamp,
                         'metrics': {'rounds': rounds, 'movementSteps': steps},
                         'source': {'issue': row.get('issue_url'), 'runId': row.get('run_id'),
-                                   'configuration': row.get('configuration'), 'commit': row.get('commit')},
-                        'released': None, 'caseSetIdentity': None})
+                                   'configuration': row.get('configuration'), 'commit': row.get('commit'),
+                                   'event': 'release', 'tag': 'p3', 'workflow': row['release_workflow']},
+                        'released': True, 'caseSetIdentity': None})
         counts['complete'] += 1
     return {'schemaVersion': 1, 'organization': 'ece281s1', 'caseCount': 20,
-            'referenceOnly': True, 'coverage': counts, 'entries': entries}
+            'releaseOnly': True, 'referenceOnly': True, 'coverage': counts, 'entries': entries}
 
 
 def project_from_snapshot(snapshot):
     return {'id': 'project-03', 'title': 'Project 03 · Task 3',
-            'description': '每小时同步最新可见运行，仅展示 20 个用例全部通过的记录。release 与用例集版本尚未确认，结果仅供参考。',
-            'referenceOnly': True, 'timeLabel': '结果生成时间',
+            'description': '每小时同步正式发布 p3 标签后触发的判题，仅展示 20 个用例全部通过的 release 结果，不收录预览运行。',
+            'releaseOnly': True, 'referenceOnly': True, 'timeLabel': 'Release 结果时间',
             'primaryMetric': 'rounds',
             'metrics': [{'key': 'rounds', 'label': '同步轮数', 'unit': '轮', 'direction': 'asc', 'decimals': 0},
                         {'key': 'movementSteps', 'label': '移动步数', 'unit': '步', 'direction': 'asc', 'decimals': 0}],

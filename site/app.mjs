@@ -86,7 +86,7 @@ function selectRanking(project, metric, updateUrl) {
   }
   $('table-caption').textContent = `${project.title} · ${rankingTitle(metric)}`;
   const ranked = rankEntries(state.project);
-  $('board-status').textContent = project.referenceOnly ? 'Latest run snapshots' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
+  $('board-status').textContent = project.releaseOnly ? 'Released run snapshots' : project.referenceOnly ? 'Latest run snapshots' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
   $('ranked-count').textContent = ranked.length;
   $('best-label').textContent = rankingLabels.get(metric.key)?.best ?? `BEST ${metric.label.toUpperCase()}`;
   $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[metric.key], metric) : '—';
@@ -96,7 +96,7 @@ function selectRanking(project, metric, updateUrl) {
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
   const direction = metric.direction === 'asc' ? '从小到大' : '从大到小';
   $('ranking-note').textContent = `默认按「${metric.label}」${direction}排列，该项成绩相同则并列。`;
-  $('about-description').textContent = project.referenceOnly ? '仅展示 20/20 验证通过的最新可见运行。结果生成时间以北京时间显示，release 和用例集版本未核对，不作为正式 bonus 名次。' : '提交时间以北京时间（UTC+8）显示。';
+  $('about-description').textContent = project.releaseOnly ? '仅收录正式发布 p3 标签触发且已完成的 release 判题。Actions 事件、配置名和 SHA 均已核对，20/20 验证通过才显示总轮数。时间为北京时间，用例集版本仍需课程方确认。' : project.referenceOnly ? '仅展示 20/20 验证通过的最新可见运行。结果生成时间以北京时间显示，release 和用例集版本未核对，不作为正式 bonus 名次。' : '提交时间以北京时间（UTC+8）显示。';
   renderTable();
 }
 
@@ -152,8 +152,8 @@ function renderTable() {
     return tr;
   }));
   $('empty-state').hidden = entries.length !== 0;
-  $('empty-state').querySelector('h3').textContent = project.entries.length ? 'No matching names' : 'No results yet';
-  $('empty-state').querySelector('p').textContent = project.entries.length ? 'Try another name.' : 'Results appear here after publication.';
+  $('empty-state').querySelector('h3').textContent = project.entries.length ? 'No matching names' : project.releaseOnly ? 'No released results yet' : 'No results yet';
+  $('empty-state').querySelector('p').textContent = project.entries.length ? 'Try another name.' : project.releaseOnly ? 'Publish the p3 release and pass all 20 Task 3 cases to appear here.' : 'Results appear here after publication.';
   $('clear-search').hidden = !state.query;
   $('result-count').textContent = `${entries.length} of ${project.entries.length} entries`;
 }

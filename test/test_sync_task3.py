@@ -14,12 +14,14 @@ spec.loader.exec_module(sync)
 
 
 def source():
-    return {'read_errors': 0, 'student_repositories': 1,
-            'students': [{'repository': 'ece281s1/Example123project', 'configuration': 'p3',
+    return {'read_errors': 0, 'student_repositories': 1, 'release_only': True,
+            'students': [{'repository': 'ece281s1/Example123project', 'configuration': 'p3-release',
                           'status': 'complete_valid', 'verified_cases': 20, 'task3_cases': 20,
                           'task3_total_rounds': 100, 'task3_total_movement_steps': 170,
                           'generated_at': '2026-11-18 19:00:00', 'run_id': 'RUN1',
-                          'issue_url': 'https://example.test/issues/1', 'commit': 'abcdef'}]}
+                          'issue_url': 'https://example.test/issues/1', 'commit': 'abcdef',
+                          'released': True, 'release_event': 'release', 'release_tag': 'p3',
+                          'release_workflow': 'release.yaml@refs/tags/p3'}]}
 
 
 class SyncTests(unittest.TestCase):
@@ -29,12 +31,20 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(entry['metrics'], {'rounds': 100, 'movementSteps': 170})
         self.assertEqual(entry['name'], 'Example')
         self.assertTrue(entry['submittedAt'].endswith('+08:00'))
-        self.assertIsNone(entry['released'])
+        self.assertTrue(entry['released'])
 
     def test_failure_and_no_result_are_not_ranked_as_zero(self):
-        for status in ('invalid_case', 'no_p3_result', 'missing_task3'):
+        for status in ('invalid_case', 'no_release_result', 'missing_task3'):
             data=source(); data['students'][0]['status']=status
             self.assertEqual(sync.make_snapshot(data)['entries'], [])
+
+    def test_preview_and_unverified_complete_results_are_rejected(self):
+        data=source(); data['release_only']=False
+        with self.assertRaises(ValueError):sync.make_snapshot(data)
+        for key,value in [('configuration','p3'),('released',None),('release_event','push'),
+                          ('release_workflow','push.yaml@refs/tags/p3')]:
+            data=source(); data['students'][0][key]=value
+            with self.assertRaises(ValueError):sync.make_snapshot(data)
 
     def test_stale_and_partial_reads_are_rejected(self):
         data=source(); data['read_errors']=1

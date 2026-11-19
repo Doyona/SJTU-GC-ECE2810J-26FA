@@ -4,12 +4,12 @@
 
 ## 每小时同步
 
-本机 LaunchAgent `com.ece281.task3-sync` 每 3600 秒读取全部学生 `*project` 仓库的最新可见 P3 结果。
+本机 LaunchAgent `com.ece281.task3-sync` 每 3600 秒读取全部学生 `*project` 仓库的正式发布后的 P3 release 结果。
 
 - 原始快照、CSV 与读取状态保存在 `data/task3/`，该目录不提交。
 - `data/task3-leaderboard.json` 保存可公开的有效汇总，随后更新 `site/data/leaderboard.json`。
-- 只展示 20 个用例全部验证通过的最新运行。同步轮数为路线长度指标；移动步数为 A+B 非等待动作总数。
-- release 与用例集版本尚未确认，页面明确标注为参考快照，不作为正式 bonus 名次。
+- 只读取课程 bot 发布的 p3-release 结果，并核对 Actions 的 release 事件、p3 标签、运行编号和完整 SHA。只展示 20 个用例全部验证通过的正式发布运行。同步轮数为路线长度指标；移动步数为 A+B 非等待动作总数。
+- release 来源已通过 Actions 核对，预览结果及旧预览缓存不会进入榜单。用例集版本仍需课程方确认，因此不自动宣称为最终 bonus 名次。
 - 只有数据变化时才提交两份 JSON 并推送 `main`，由现有 GitHub Pages 工作流自动部署。
 - 读取失败保留旧数据；工作区有无关改动或分支冲突时停止发布，不 reset、stash 或强制推送。
 - 凭据沿用外部 Joint-Teapot 配置，不复制到网站。定时器需要 Mac 登录并运行，睡眠或断网会延迟同步。
