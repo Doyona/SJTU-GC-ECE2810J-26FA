@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#154e3e">
-    <meta name="description" content="Project leaderboards for SJTU GC ECE2810J, Fall 2026. Explore results, compare performance, and follow the rankings.">
+    <meta name="description" content="Project leaderboards for SJTU GC ECE2810J.">
     <title>Leaderboard · ECE2810J</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
@@ -15,13 +15,13 @@
     <div class="layout">
       <aside class="sidebar" aria-label="Course navigation">
         <a class="brand" href="./" aria-label="ECE2810J home"><span class="brand-icon" aria-hidden="true">↗</span><span>ECE2810J<span class="brand-sub">SJTU · GLOBAL COLLEGE</span></span></a>
-        <div class="semester"><span class="status-dot"></span> FALL 2026 <span class="semester-year">26FA</span></div>
+        <div class="year-control"><label for="year-select">Year</label><select id="year-select" disabled><option>Fall 2026</option></select></div>
         <div class="nav-label">WORKSPACE</div>
         <a class="nav-link active" href="#rankings" aria-current="page"><span aria-hidden="true">▥</span> Leaderboard <span class="nav-arrow" aria-hidden="true">↗</span></a>
         <div class="sidebar-bottom"><a class="repo-link" href="https://github.com/Doyona/SJTU-GC-ECE2810J-26FA" target="_blank" rel="noreferrer">View repository <span aria-hidden="true">↗</span></a></div>
       </aside>
       <main>
-        <header class="topbar"><span>COURSE WORKSPACE <span class="breadcrumb">/</span> <span class="topbar-page">Leaderboard</span></span><span class="term-label">2026 — FALL SEMESTER</span></header>
+        <header class="topbar"><span>COURSE WORKSPACE <span class="breadcrumb">/</span> <span class="topbar-page">Leaderboard</span></span><span class="term-label" id="term-label">Fall 2026</span></header>
         <div class="content">
           <section class="intro" aria-labelledby="page-title"><div><h1 id="page-title">Leaderboard<span>.</span></h1></div><div class="intro-mark" aria-hidden="true"><span></span><span></span><span></span><span></span><i>↗</i></div></section>
           <section class="board" aria-labelledby="board-title">
@@ -34,7 +34,7 @@
             <div class="stats" aria-label="Project statistics"><div class="stat"><span class="stat-label">RANKED RESULTS</span><div><strong id="ranked-count">—</strong><span class="stat-detail">results</span></div></div><div class="stat"><span class="stat-label" id="best-label">BEST RESULT</span><div><strong id="best-value">—</strong><span class="stat-detail" id="best-unit"></span></div></div><div class="stat"><span class="stat-label">LAST UPDATED</span><div><strong class="date-value" id="updated-date">—</strong><span class="stat-detail" id="updated-time"></span></div></div></div>
             <section class="ranking-section" id="rankings" aria-label="Rankings" tabindex="-1"><div class="toolbar"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg><input id="search" type="search" placeholder="Search by name…" aria-label="Search by name" autocomplete="off"></label><div class="toolbar-right"><span id="result-count" role="status" aria-live="polite"></span><button class="export-button" id="export" type="button" disabled><span aria-hidden="true">↓</span> Export CSV</button></div></div><div class="table-scroll"><table id="leaderboard"><caption class="sr-only" id="table-caption">Project rankings</caption><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div><div class="empty-state" id="empty-state" role="status" hidden><span aria-hidden="true">⌕</span><h3>No matching names</h3><button id="clear-search" type="button">Clear search</button></div><div class="error-state" id="error-state" role="alert" hidden><h3>Results couldn't be loaded</h3><p id="error-message"></p><button id="retry" type="button">Try again</button></div></section>
           </section>
-          <footer class="page-footer"><span>ECE2810J <span class="footer-separator">/</span> Fall 2026</span></footer>
+          <footer class="page-footer"><span>ECE2810J <span class="footer-separator">/</span> <span id="footer-year">Fall 2026</span></span></footer>
         </div>
       </main>
     </div>

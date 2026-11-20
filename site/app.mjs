@@ -1,7 +1,7 @@
-import { validateData, rankEntries, visibleEntries, csvCell } from './leaderboard.mjs';
+import { validateData, selectYear, sortedYears, rankEntries, visibleEntries, csvCell } from './leaderboard.mjs';
 
 const $ = id => document.getElementById(id);
-const state = { data: null, project: null, query: '', sortKey: '', direction: '' };
+const state = { data: null, year: null, project: null, query: '', sortKey: '', direction: '' };
 const dateFormat = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Shanghai' });
 const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' });
 const submittedAtFormat = new Intl.DateTimeFormat('en-GB', { dateStyle: 'short', timeStyle: 'medium', timeZone: 'Asia/Shanghai' });
@@ -32,16 +32,13 @@ async function load() {
     if (!response.ok) throw new Error(`Request failed (${response.status}).`);
     state.data = validateData(await response.json());
     const params = new URL(location.href).searchParams;
-    const selected = state.data.projects.find(project => project.id === params.get('project')) || state.data.projects[0];
-    $('project-tabs').replaceChildren(...state.data.projects.map((project, index) => {
-      const button = element('button', 'project-tab');
-      button.type = 'button';
-      button.dataset.project = project.id;
-      button.append(element('span', 'tab-number', String(index + 1).padStart(2, '0')), document.createTextNode(project.title));
-      button.addEventListener('click', () => selectProject(project));
-      return button;
+    $('year-select').replaceChildren(...sortedYears(state.data).map(year => {
+      const option = element('option', '', year.label + (year.archived ? ' · Archived' : ''));
+      option.value = year.id;
+      return option;
     }));
-    selectProject(selected, params.get('ranking'), false);
+    selectAcademicYear(params.get('year'), params.get('project'), params.get('ranking'), false);
+    $('year-select').disabled = false;
     $('export').disabled = false;
   } catch (error) {
     $('error-state').hidden = false;
@@ -49,9 +46,29 @@ async function load() {
     $('error-message').textContent = error.message;
     $('board-status').textContent = 'Unavailable';
     $('export').disabled = true;
+    $('year-select').disabled = true;
   } finally {
     $('retry').disabled = false;
   }
+}
+
+function selectAcademicYear(id, projectId = state.project?.id, rankingKey = state.project?.primaryMetric, updateUrl = true) {
+  state.year = selectYear(state.data, id);
+  $('year-select').value = state.year.id;
+  $('term-label').textContent = state.year.label;
+  $('footer-year').textContent = state.year.label;
+  state.query = '';
+  $('search').value = '';
+  const selected = state.year.projects.find(project => project.id === projectId) || state.year.projects[0];
+  $('project-tabs').replaceChildren(...state.year.projects.map((project, index) => {
+    const button = element('button', 'project-tab');
+    button.type = 'button';
+    button.dataset.project = project.id;
+    button.append(element('span', 'tab-number', String(index + 1).padStart(2, '0')), document.createTextNode(project.title));
+    button.addEventListener('click', () => selectProject(project));
+    return button;
+  }));
+  selectProject(selected, rankingKey, updateUrl);
 }
 
 function selectProject(project, rankingKey = state.project?.primaryMetric, updateUrl = true) {
@@ -76,18 +93,19 @@ function selectRanking(project, metric, updateUrl) {
   for (const button of $('ranking-tabs').children) button.setAttribute('aria-pressed', String(button.dataset.ranking === metric.key));
   if (updateUrl) {
     const url = new URL(location.href);
+    url.searchParams.set('year', state.year.id);
     url.searchParams.set('project', project.id);
     url.searchParams.set('ranking', metric.key);
     history.replaceState(null, '', url);
   }
   $('table-caption').textContent = `${project.title} · ${rankingTitle(metric)}`;
   const ranked = rankEntries(state.project);
-  $('board-status').textContent = project.releaseOnly ? 'Release results' : project.referenceOnly ? 'Results' : state.data.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
+  $('board-status').textContent = state.year.archived ? 'Archived' : project.releaseOnly ? 'Release results' : project.referenceOnly ? 'Results' : state.year.demo ? 'Sample results' : ranked.length ? 'Published results' : 'Awaiting results';
   $('ranked-count').textContent = ranked.length;
   $('best-label').textContent = rankingLabels.get(metric.key)?.best ?? `BEST ${metric.label.toUpperCase()}`;
   $('best-value').textContent = ranked.length ? formatMetric(ranked[0].metrics[metric.key], metric) : '—';
   $('best-unit').textContent = metric.unit;
-  const updated = new Date(state.data.updatedAt);
+  const updated = new Date(state.year.updatedAt);
   $('updated-date').textContent = dateFormat.format(updated);
   $('updated-time').textContent = `${timeFormat.format(updated)} CST (UTC+8)`;
   renderTable();
@@ -161,6 +179,7 @@ $('clear-search').addEventListener('click', () => {
   $('search').focus();
 });
 $('retry').addEventListener('click', load);
+$('year-select').addEventListener('change', event => selectAcademicYear(event.target.value));
 document.addEventListener('keydown', event => {
   if (event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) && !document.activeElement.isContentEditable) {
     event.preventDefault();
@@ -175,7 +194,7 @@ $('export').addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
   const link = element('a');
   link.href = url;
-  link.download = `${project.id}-${project.primaryMetric}-leaderboard.csv`;
+  link.download = `${state.year.id}-${project.id}-${project.primaryMetric}-leaderboard.csv`;
   document.body.append(link);
   link.click();
   link.remove();

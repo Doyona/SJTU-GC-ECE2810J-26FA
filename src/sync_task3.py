@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 from zoneinfo import ZoneInfo
+from year_catalog import DEFAULT_ORGANIZATION, DEFAULT_YEAR, catalog, find_year, validate
 
 DATA_PATHS = ('data/task3-leaderboard.json', 'site/data/leaderboard.json')
 EXPECTED_REMOTE = 'Doyona/SJTU-GC-ECE2810J-26FA'
@@ -75,7 +76,11 @@ def valid_integer(value):
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 
-def make_snapshot(source):
+def make_snapshot(source, organization=DEFAULT_ORGANIZATION):
+    if not re.fullmatch(r'[A-Za-z0-9_-]+', organization):
+        raise ValueError('Invalid course organization')
+    if source.get('organization', organization) != organization:
+        raise ValueError('Collector organization does not match the selected year')
     if source.get('release_only') is not True:
         raise ValueError('Collector must enforce release-only provenance; preview snapshots are rejected')
     if source.get('read_errors') != 0:
@@ -87,7 +92,7 @@ def make_snapshot(source):
     students_by_repo = {}
     for row in students:
         repo = row.get('repository', '')
-        if not repo.startswith('ece281s1/') or not repo.endswith('project'):
+        if not repo.startswith(organization + '/') or not repo.endswith('project'):
             raise ValueError('Unexpected student repository')
         if row.get('status') in ('read_error', 'stale_after_read_error'):
             raise ValueError('Stale student result; keep previous published data')
@@ -134,7 +139,7 @@ def make_snapshot(source):
                                    'event': 'release', 'tag': 'p3', 'workflow': row['release_workflow']},
                         'released': True, 'caseSetIdentity': None})
         counts['complete'] += 1
-    return {'schemaVersion': 1, 'organization': 'ece281s1', 'caseCount': 20,
+    return {'schemaVersion': 1, 'organization': organization, 'caseCount': 20,
             'releaseOnly': True, 'referenceOnly': True, 'selection': 'best', 'coverage': counts, 'entries': entries}
 
 
@@ -157,31 +162,32 @@ def atomic_json(path, value):
     temporary.replace(path)
 
 
-def update_files(root, source):
-    snapshot = make_snapshot(source)
+def update_files(root, source, year_id=DEFAULT_YEAR, organization=DEFAULT_ORGANIZATION):
+    snapshot = make_snapshot(source, organization)
+    snapshot['yearId'] = year_id
     public_path, site_path = [root / name for name in DATA_PATHS]
-    site = json.loads(site_path.read_text())
+    original_site = json.loads(site_path.read_text())
+    site = catalog(original_site)
+    year = find_year(site, year_id)
+    if year['archived'] or year['organization'] != organization:
+        raise ValueError('Sync target is archived or belongs to another course organization')
     project = project_from_snapshot(snapshot)
     previous = json.loads(public_path.read_text()) if public_path.exists() else None
     if previous:
         previous.pop('updatedAt', None)
-    existing = next((item for item in site['projects'] if item['id'] == 'project-03'), None)
-    obsolete = any(item['id'] in ('project-01', 'project-02') for item in site['projects'])
-    if previous == snapshot and existing == project and not obsolete:
+    existing = next((item for item in year['projects'] if item['id'] == 'project-03'), None)
+    obsolete = any(item['id'] in ('project-01', 'project-02') for item in year['projects'])
+    if previous == snapshot and existing == project and not obsolete and 'years' in original_site:
         return False
     now = datetime.now(timezone.utc).isoformat()
-    site['projects'] = [project if item['id'] == 'project-03' else item for item in site['projects']
+    year['projects'] = [project if item['id'] == 'project-03' else item for item in year['projects']
                         if item['id'] not in ('project-01', 'project-02')]
     if existing is None:
-        site['projects'].append(project)
-    site['updatedAt'] = now
+        year['projects'].append(project)
+    year['updatedAt'] = now
     snapshot['updatedAt'] = now
     # Validate against the actual website schema before replacing published inputs.
-    script = "import {validateData} from './site/leaderboard.mjs'; let s=''; for await(const c of process.stdin)s+=c; validateData(JSON.parse(s));"
-    checked = subprocess.run(['node', '--input-type=module', '-e', script], cwd=root,
-                             input=json.dumps(site), text=True, capture_output=True, timeout=30)
-    if checked.returncode:
-        raise ValueError('Website schema rejected the new data')
+    validate(root, site)
     atomic_json(public_path, snapshot)
     atomic_json(site_path, site)
     return True
@@ -213,8 +219,13 @@ def main():
     parser.add_argument('--env-file', type=Path, help='Existing Joint-Teapot credentials; never copied into website')
     parser.add_argument('--source-json', type=Path, help='Offline verification using a saved class-lengths.json')
     parser.add_argument('--publish', action='store_true', help='Commit and push only the two public JSON data files')
+    parser.add_argument('--year-id', default=DEFAULT_YEAR, help='Target year and term; independent of the website default')
+    parser.add_argument('--organization', default=DEFAULT_ORGANIZATION, help='Gitea organization for the target year')
     args = parser.parse_args()
     root = args.website_root.resolve()
+    selected = find_year(catalog(json.loads((root/'site/data/leaderboard.json').read_text())), args.year_id)
+    if selected['archived'] or selected['organization'] != args.organization:
+        parser.error('Sync target is archived or belongs to another course organization')
     if args.source_json and args.publish:
         parser.error('Offline fixture mode cannot publish')
     lock_dir = root/'data/task3'
@@ -232,11 +243,12 @@ def main():
         else:
             if not args.exporter or not args.env_file:
                 parser.error('--exporter and --env-file are required for live collection')
-            run([sys.executable, '-B', str(args.exporter.resolve()), '--organization', 'ece281s1',
-                 '--env-file', str(args.env_file.resolve()), '--output-dir', str(root/'data/task3')], root)
-            source_path = root/'data/task3/class-lengths.json'
+            output = root/'data/task3' if args.year_id == DEFAULT_YEAR else root/'data/task3'/args.year_id
+            run([sys.executable, '-B', str(args.exporter.resolve()), '--organization', args.organization,
+                 '--env-file', str(args.env_file.resolve()), '--output-dir', str(output)], root)
+            source_path = output/'class-lengths.json'
         source = json.loads(source_path.read_text())
-        changed = update_files(root, source)
+        changed = update_files(root, source, args.year_id, args.organization)
         print(f'Task 3 results {"updated" if changed else "unchanged"}; {source["student_repositories"]} student repositories checked.', flush=True)
         if args.publish:
             publish(root)

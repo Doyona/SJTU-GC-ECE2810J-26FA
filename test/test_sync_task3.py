@@ -3,11 +3,13 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT/'src'))
 spec = importlib.util.spec_from_file_location('sync_task3', ROOT/'src/sync_task3.py')
 sync = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(sync)
@@ -103,7 +105,7 @@ class SyncTests(unittest.TestCase):
             first=path.read_bytes()
             self.assertFalse(sync.update_files(root,source()))
             self.assertEqual(path.read_bytes(),first)
-            self.assertEqual(json.loads(first)['projects'][0],baseline['projects'][0])
+            self.assertEqual(json.loads(first)['years'][0]['projects'][0],baseline['projects'][0])
             data=source();data['read_errors']=1
             with self.assertRaises(ValueError):sync.update_files(root,data)
             self.assertEqual(path.read_bytes(),first)

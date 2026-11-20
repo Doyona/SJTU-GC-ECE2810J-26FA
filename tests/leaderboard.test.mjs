@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateData, rankEntries, visibleEntries, csvCell } from '../site/leaderboard.mjs';
+import { validateData, selectYear, sortedYears, rankEntries, visibleEntries, csvCell } from '../site/leaderboard.mjs';
 
 const published = JSON.parse(await readFile(new URL('../site/data/leaderboard.json', import.meta.url), 'utf8'));
 const updatedAt = '2026-11-04T13:00:00Z';
@@ -40,7 +40,7 @@ test('search results can rank the same entries independently by steps or time', 
       { id: 'entry-c', name: '王五', metrics: { searchTime: 2.5, steps: 7 } }
     ]
   };
-  const scores = { ...published, projects: [project] };
+  const scores = { ...data, projects: [project] };
   assert.doesNotThrow(() => validateData(scores));
   assert.deepEqual(rankEntries(project).map(({ name, rank }) => [name, rank]), [['李四', 1], ['王五', 1], ['张三', 3]]);
   const timeBoard = { ...project, primaryMetric: 'searchTime' };
@@ -85,7 +85,7 @@ test('submission times sort chronologically across timezones and leave undated e
       { id: 'baseline', name: 'Baseline', metrics: null }
     ]
   };
-  const scores = { ...published, projects: [project] };
+  const scores = { ...data, projects: [project] };
   assert.doesNotThrow(() => validateData(scores));
   assert.deepEqual(visibleEntries(project, '', 'submittedAt').map(entry => entry.id), ['entry-b', 'entry-a', 'entry-c', 'baseline']);
   assert.deepEqual(visibleEntries(project, '', 'submittedAt', 'asc').map(entry => entry.id), ['entry-a', 'entry-b', 'entry-c', 'baseline']);
@@ -137,4 +137,39 @@ test('CSV escaping handles quotes, commas, newlines, and spreadsheet formulas', 
   assert.equal(csvCell('Team "A", B\nC'), '"Team ""A"", B\nC"');
   assert.equal(csvCell('=SUM(A1:A2)'), '"\'=SUM(A1:A2)"');
   assert.equal(csvCell(98.75), '"98.75"');
+});
+
+function yearCatalog() {
+  return { schemaVersion: 2, activeYear: '2026-fall', years: [
+    { ...structuredClone(data), id: '2026-fall', label: 'Fall 2026', year: 2026, term: 'fall', organization: 'course26', archived: false },
+    { ...structuredClone(data), id: '2027-spring', label: 'Spring 2027', year: 2027, term: 'spring', organization: 'course27', archived: false },
+    { ...structuredClone(data), id: '2025-fall', label: 'Fall 2025', year: 2025, term: 'fall', organization: 'course25', archived: true }
+  ] };
+}
+
+test('year selection isolates results and defaults safely for unknown links', () => {
+  const catalog = yearCatalog();
+  catalog.years[1].projects[0].entries = [];
+  assert.equal(validateData(catalog), catalog);
+  assert.equal(selectYear(catalog, '2027-spring').projects[0].entries.length, 0);
+  assert.equal(selectYear(catalog, '2026-fall').projects[0].entries.length, 5);
+  assert.equal(selectYear(catalog, 'missing').id, '2026-fall');
+  assert.equal(selectYear(catalog, '2025-fall').archived, true);
+  assert.deepEqual(sortedYears(catalog).map(year => year.id), ['2027-spring', '2026-fall', '2025-fall']);
+  assert.equal(catalog.years[0].id, '2026-fall');
+});
+
+test('invalid year catalogs and malformed historical results are rejected', () => {
+  for (const mutate of [
+    value => { value.years.push(structuredClone(value.years[0])); },
+    value => { value.activeYear = 'missing'; },
+    value => { value.years[0].archived = true; },
+    value => { value.years[1].term = 'autumn'; },
+    value => { value.years[1].organization = '../other'; },
+    value => { value.years[2].projects[0].entries[0].metrics.score = -1; }
+  ]) {
+    const catalog = yearCatalog();
+    mutate(catalog);
+    assert.throws(() => validateData(catalog), /Invalid leaderboard data/);
+  }
 });

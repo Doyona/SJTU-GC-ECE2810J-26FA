@@ -1,4 +1,34 @@
 export function validateData(data) {
+  if (data && Object.hasOwn(data, 'years')) {
+    const fail = message => { throw new Error(`Invalid leaderboard data: ${message}`); };
+    if (data.schemaVersion !== 2 || !Array.isArray(data.years) || !data.years.length) fail('year catalog is required');
+    const ids = new Set();
+    for (const year of data.years) {
+      if (!year || !Number.isInteger(year.year) || year.year < 2000 || year.year > 2199
+          || !['spring', 'summer', 'fall', 'winter'].includes(year.term)
+          || year.id !== `${year.year}-${year.term}` || ids.has(year.id)) fail('year IDs must be unique year-term pairs');
+      ids.add(year.id);
+      if (typeof year.label !== 'string' || !year.label.trim() || typeof year.archived !== 'boolean'
+          || typeof year.organization !== 'string' || !/^[A-Za-z0-9_-]+$/.test(year.organization)) fail('invalid year metadata');
+      validateBoard(year);
+    }
+    if (!ids.has(data.activeYear)) fail('activeYear must refer to an existing year');
+    if (data.years.find(year => year.id === data.activeYear).archived) fail('the default year cannot be archived');
+    return data;
+  }
+  return validateBoard(data);
+}
+
+export function selectYear(data, id) {
+  return data.years.find(year => year.id === id) ?? data.years.find(year => year.id === data.activeYear);
+}
+
+export function sortedYears(data) {
+  const order = { winter: 0, spring: 1, summer: 2, fall: 3 };
+  return [...data.years].sort((a, b) => b.year - a.year || order[b.term] - order[a.term]);
+}
+
+function validateBoard(data) {
   const fail = (message) => { throw new Error(`Invalid leaderboard data: ${message}`); };
   const isText = value => typeof value === 'string' && value.trim().length > 0;
   const isDate = value => isText(value) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value) && Number.isFinite(Date.parse(value));

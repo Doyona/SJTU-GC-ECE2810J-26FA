@@ -2,6 +2,24 @@
 
 Website: https://Doyona.github.io/SJTU-GC-ECE2810J-26FA/
 
+## Years
+
+Use the Year selector to view a period. Links include `?year=2026-fall`, and CSV filenames include the selected period. Each period has independent results and timestamps. Fall 2026 is the default; archived periods remain available.
+
+Manage the catalog locally:
+
+```sh
+python3 -B src/manage_years.py list
+python3 -B src/manage_years.py add --year 2027 --term fall --organization COURSE_ORGANIZATION
+python3 -B src/manage_years.py set-default 2027-fall
+python3 -B src/manage_years.py archive 2026-fall
+python3 -B src/manage_years.py unarchive 2026-fall
+```
+
+New periods start with no results. `remove-empty ID` removes only a non-default period without results. The default cannot be archived. These commands edit the catalog without committing or pushing.
+
+Synchronization uses an explicit `--year-id` and `--organization`; its defaults remain `2026-fall` and `ece281s1`, even when another period becomes the website default. Configure a future collector for its own period and organization. Archived periods reject new synchronization.
+
 The site displays one best verified release per student. Results are selected by lowest total Task 3 rounds, then fewest movement steps, then earliest result and run ID. Later failed or worse results do not replace a better result. The interface uses English without explanatory notes.
 
 ## Hourly synchronization

@@ -10,4 +10,5 @@ await mkdir(new URL('dist/', root), { recursive: true });
 for (const path of ['index.html', 'styles.css', 'favicon.svg', 'app.mjs', 'leaderboard.mjs', 'data/leaderboard.json']) {
   await cp(new URL(`site/${path}`, root), new URL(`dist/${path}`, root), { recursive: true });
 }
-console.log(`Built ${data.projects.length} leaderboards → ${fileURLToPath(new URL('dist/', root))}`);
+const boards = data.years ? data.years.reduce((count, year) => count + year.projects.length, 0) : data.projects.length;
+console.log(`Built ${boards} leaderboards → ${fileURLToPath(new URL('dist/', root))}`);

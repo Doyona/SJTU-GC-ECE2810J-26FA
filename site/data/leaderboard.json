@@ -1,40 +1,52 @@
 {
-  "demo": false,
-  "updatedAt": "2026-11-19T08:52:58.227628+00:00",
-  "projects": [
+  "schemaVersion": 2,
+  "activeYear": "2026-fall",
+  "years": [
     {
-      "id": "project-03",
-      "title": "Project 03 · Task 3",
-      "description": "Project 3 Task 3 results.",
-      "releaseOnly": true,
-      "referenceOnly": true,
-      "selection": "best",
-      "timeLabel": "Release time",
-      "primaryMetric": "rounds",
-      "metrics": [
+      "demo": false,
+      "updatedAt": "2026-11-19T09:24:18.278745+00:00",
+      "projects": [
         {
-          "key": "rounds",
-          "label": "Rounds",
-          "unit": "",
-          "direction": "asc",
-          "decimals": 0
-        },
-        {
-          "key": "movementSteps",
-          "label": "Movement steps",
-          "unit": "",
-          "direction": "asc",
-          "decimals": 0
+          "id": "project-03",
+          "title": "Project 03 · Task 3",
+          "description": "Project 3 Task 3 results.",
+          "releaseOnly": true,
+          "referenceOnly": true,
+          "selection": "best",
+          "timeLabel": "Release time",
+          "primaryMetric": "rounds",
+          "metrics": [
+            {
+              "key": "rounds",
+              "label": "Rounds",
+              "unit": "",
+              "direction": "asc",
+              "decimals": 0
+            },
+            {
+              "key": "movementSteps",
+              "label": "Movement steps",
+              "unit": "",
+              "direction": "asc",
+              "decimals": 0
+            }
+          ],
+          "entries": [],
+          "coverage": {
+            "total": 102,
+            "withResults": 0,
+            "complete": 0,
+            "failedOrIncomplete": 0,
+            "noVisibleResult": 102
+          }
         }
       ],
-      "entries": [],
-      "coverage": {
-        "total": 102,
-        "withResults": 0,
-        "complete": 0,
-        "failedOrIncomplete": 0,
-        "noVisibleResult": 102
-      }
+      "id": "2026-fall",
+      "year": 2026,
+      "term": "fall",
+      "label": "Fall 2026",
+      "organization": "ece281s1",
+      "archived": false
     }
   ]
 }
