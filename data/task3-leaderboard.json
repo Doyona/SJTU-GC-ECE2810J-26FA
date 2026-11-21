@@ -7,12 +7,12 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 1,
+    "withResults": 2,
     "complete": 0,
-    "failedOrIncomplete": 1,
-    "noVisibleResult": 102
+    "failedOrIncomplete": 2,
+    "noVisibleResult": 101
   },
   "entries": [],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-20T12:22:32.593368+00:00"
+  "updatedAt": "2026-11-21T11:40:05.020851+00:00"
 }
