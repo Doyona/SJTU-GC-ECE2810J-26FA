@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-23T14:22:30.440459+00:00",
+      "updatedAt": "2026-11-23T19:32:23.862617+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -51,13 +51,33 @@
               },
               "released": true,
               "caseSetIdentity": null
+            },
+            {
+              "id": "p3-1b82e863b707f716",
+              "name": "ZhangZhongqi",
+              "submittedAt": "2026-11-24T02:13:07+08:00",
+              "metrics": {
+                "rounds": 5177826,
+                "movementSteps": 7191904
+              },
+              "source": {
+                "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/ZhangZhongqi524370910201project/issues/6",
+                "runId": "42456BA8",
+                "configuration": "p3-release",
+                "commit": "d79ab11612d18dae80f01d7cdc1f685ac2dbf1d8",
+                "event": "release",
+                "tag": "p3",
+                "workflow": "release.yaml@refs/tags/p3"
+              },
+              "released": true,
+              "caseSetIdentity": null
             }
           ],
           "coverage": {
             "total": 103,
             "withResults": 7,
-            "complete": 1,
-            "failedOrIncomplete": 6,
+            "complete": 2,
+            "failedOrIncomplete": 5,
             "noVisibleResult": 96
           }
         }
