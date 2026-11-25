@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-25T09:17:23.959433+00:00",
+      "updatedAt": "2026-11-25T10:27:38.665292+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -93,6 +93,26 @@
               "caseSetIdentity": null
             },
             {
+              "id": "p3-48cb980bc9437acf",
+              "name": "XuSuyi",
+              "submittedAt": "2026-11-25T17:19:11+08:00",
+              "metrics": {
+                "rounds": 5177826,
+                "movementSteps": 7191904
+              },
+              "source": {
+                "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/XuSuyi524370910004project/issues/7",
+                "runId": "5C8ADCC8",
+                "configuration": "p3-release",
+                "commit": "264ceb1ca668a565f06579d8f1449de5840152c8",
+                "event": "release",
+                "tag": "p3",
+                "workflow": "release.yaml@refs/tags/p3"
+              },
+              "released": true,
+              "caseSetIdentity": null
+            },
+            {
               "id": "p3-1b82e863b707f716",
               "name": "ZhangZhongqi",
               "submittedAt": "2026-11-24T02:13:07+08:00",
@@ -115,10 +135,10 @@
           ],
           "coverage": {
             "total": 103,
-            "withResults": 8,
-            "complete": 4,
+            "withResults": 9,
+            "complete": 5,
             "failedOrIncomplete": 4,
-            "noVisibleResult": 95
+            "noVisibleResult": 94
           }
         }
       ],
