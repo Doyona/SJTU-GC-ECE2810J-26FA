@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-26T11:30:40.304735+00:00",
+      "updatedAt": "2026-11-26T16:44:45.596934+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -32,6 +32,26 @@
             }
           ],
           "entries": [
+            {
+              "id": "p3-e2ad542fe7ec75a7",
+              "name": "JiChenkai",
+              "submittedAt": "2026-11-26T23:47:49+08:00",
+              "metrics": {
+                "rounds": 2302806,
+                "movementSteps": 4193322
+              },
+              "source": {
+                "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/JiChenkai523010910127project/issues/7",
+                "runId": "E3695177",
+                "configuration": "p3-release",
+                "commit": "8eb3bbde5dbdcd2ff36f0e1e16ffb7c15ecdbd63",
+                "event": "release",
+                "tag": "p3",
+                "workflow": "release.yaml@refs/tags/p3"
+              },
+              "released": true,
+              "caseSetIdentity": null
+            },
             {
               "id": "p3-ed635edfe3924909",
               "name": "LeiRuoxin",
@@ -215,10 +235,10 @@
           ],
           "coverage": {
             "total": 103,
-            "withResults": 13,
-            "complete": 9,
-            "failedOrIncomplete": 4,
-            "noVisibleResult": 90
+            "withResults": 16,
+            "complete": 10,
+            "failedOrIncomplete": 6,
+            "noVisibleResult": 87
           }
         }
       ],
