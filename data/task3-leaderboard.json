@@ -7,10 +7,10 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 9,
-    "complete": 5,
+    "withResults": 11,
+    "complete": 7,
     "failedOrIncomplete": 4,
-    "noVisibleResult": 94
+    "noVisibleResult": 92
   },
   "entries": [
     {
@@ -34,6 +34,26 @@
       "caseSetIdentity": null
     },
     {
+      "id": "p3-749d82b705e2b083",
+      "name": "LiJinshuo",
+      "submittedAt": "2026-11-26T14:38:44+08:00",
+      "metrics": {
+        "rounds": 3728886,
+        "movementSteps": 4174145
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/LiJinshuo523020910036project/issues/8",
+        "runId": "1FE082C5",
+        "configuration": "p3-release",
+        "commit": "a38fbaf3b66e9bca196762df45e3a65762d5362a",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
       "id": "p3-a00b140b932230b5",
       "name": "SuoJunkai",
       "submittedAt": "2026-11-25T16:53:01+08:00",
@@ -46,6 +66,26 @@
         "runId": "159A6510",
         "configuration": "p3-release",
         "commit": "caef916b46ae70b13939e3e94b7dc49a6da3180e",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-339f8e838e20c95f",
+      "name": "XieHou",
+      "submittedAt": "2026-11-26T14:56:19+08:00",
+      "metrics": {
+        "rounds": 5213629,
+        "movementSteps": 7244866
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/XieHou524370910015project/issues/2",
+        "runId": "845ADFB4",
+        "configuration": "p3-release",
+        "commit": "9315977c223621a1deb81a87b4058fba1d3a1932",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -115,5 +155,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-25T10:27:38.665292+00:00"
+  "updatedAt": "2026-11-26T07:35:08.496429+00:00"
 }
