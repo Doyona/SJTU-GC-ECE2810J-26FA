@@ -7,10 +7,10 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 11,
-    "complete": 7,
+    "withResults": 12,
+    "complete": 8,
     "failedOrIncomplete": 4,
-    "noVisibleResult": 92
+    "noVisibleResult": 91
   },
   "entries": [
     {
@@ -66,6 +66,26 @@
         "runId": "159A6510",
         "configuration": "p3-release",
         "commit": "caef916b46ae70b13939e3e94b7dc49a6da3180e",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-6162559652199b53",
+      "name": "WuDayu",
+      "submittedAt": "2026-11-26T15:49:00+08:00",
+      "metrics": {
+        "rounds": 4615239,
+        "movementSteps": 6368942
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/WuDayu524370910269project/issues/6",
+        "runId": "720B2B70",
+        "configuration": "p3-release",
+        "commit": "6716d46a1b4473dc7c65255ea723788dba736dd3",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -155,5 +175,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-26T07:35:08.496429+00:00"
+  "updatedAt": "2026-11-26T08:35:45.911138+00:00"
 }
