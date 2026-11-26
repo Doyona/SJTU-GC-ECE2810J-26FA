@@ -7,10 +7,10 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 12,
-    "complete": 8,
+    "withResults": 13,
+    "complete": 9,
     "failedOrIncomplete": 4,
-    "noVisibleResult": 91
+    "noVisibleResult": 90
   },
   "entries": [
     {
@@ -154,6 +154,26 @@
       "caseSetIdentity": null
     },
     {
+      "id": "p3-c23538ac69573030",
+      "name": "ZhangTianqi",
+      "submittedAt": "2026-11-26T19:22:25+08:00",
+      "metrics": {
+        "rounds": 3079823,
+        "movementSteps": 4125972
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/ZhangTianqi524370910049project/issues/7",
+        "runId": "51FA613A",
+        "configuration": "p3-release",
+        "commit": "edb6b7909a204db5a53fb280d433bd911c560aee",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
       "id": "p3-1b82e863b707f716",
       "name": "ZhangZhongqi",
       "submittedAt": "2026-11-24T02:13:07+08:00",
@@ -175,5 +195,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-26T08:35:45.911138+00:00"
+  "updatedAt": "2026-11-26T11:30:40.304735+00:00"
 }
