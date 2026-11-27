@@ -7,10 +7,10 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 16,
-    "complete": 10,
+    "withResults": 18,
+    "complete": 12,
     "failedOrIncomplete": 6,
-    "noVisibleResult": 87
+    "noVisibleResult": 85
   },
   "entries": [
     {
@@ -26,6 +26,46 @@
         "runId": "E3695177",
         "configuration": "p3-release",
         "commit": "8eb3bbde5dbdcd2ff36f0e1e16ffb7c15ecdbd63",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-7184f299e68419e7",
+      "name": "JiangZhengrui",
+      "submittedAt": "2026-11-27T12:32:06+08:00",
+      "metrics": {
+        "rounds": 3067952,
+        "movementSteps": 4176625
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/JiangZhengrui524370910127project/issues/6",
+        "runId": "86EC422C",
+        "configuration": "p3-release",
+        "commit": "7d5183ca45218d5c616b0f524b4cfe0439f1225e",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-7d7addcf24b7b577",
+      "name": "KanShiyu",
+      "submittedAt": "2026-11-27T02:04:20+08:00",
+      "metrics": {
+        "rounds": 1906091,
+        "movementSteps": 3628267
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/KanShiyu524370910162project/issues/7",
+        "runId": "3829E310",
+        "configuration": "p3-release",
+        "commit": "11be6d52905d7fb67a10abe14afc69fb18aa3d88",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -136,16 +176,16 @@
     {
       "id": "p3-dac7401620a1d445",
       "name": "XieZhuoyang",
-      "submittedAt": "2026-11-25T00:23:14+08:00",
+      "submittedAt": "2026-11-27T11:53:23+08:00",
       "metrics": {
-        "rounds": 3677556,
-        "movementSteps": 7004197
+        "rounds": 3648101,
+        "movementSteps": 6936955
       },
       "source": {
         "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/XieZhuoyang523010910085project/issues/6",
-        "runId": "EB43AA21",
+        "runId": "9FEC7D72",
         "configuration": "p3-release",
-        "commit": "7066111e7f8c579c59a9ec5c1275ca09bd6ed7d5",
+        "commit": "66b7871d3d99c6a6da532a29ba5e3b3aacac3ddc",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -176,16 +216,16 @@
     {
       "id": "p3-c23538ac69573030",
       "name": "ZhangTianqi",
-      "submittedAt": "2026-11-26T19:22:25+08:00",
+      "submittedAt": "2026-11-27T03:27:13+08:00",
       "metrics": {
-        "rounds": 3079823,
-        "movementSteps": 4125972
+        "rounds": 2284960,
+        "movementSteps": 4135067
       },
       "source": {
         "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/ZhangTianqi524370910049project/issues/7",
-        "runId": "51FA613A",
+        "runId": "5B489AED",
         "configuration": "p3-release",
-        "commit": "edb6b7909a204db5a53fb280d433bd911c560aee",
+        "commit": "dfac2656ba7dc41ffdeb22fa0ce0787363ec8c86",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -215,5 +255,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-26T16:44:45.596934+00:00"
+  "updatedAt": "2026-11-27T07:27:07.650236+00:00"
 }
