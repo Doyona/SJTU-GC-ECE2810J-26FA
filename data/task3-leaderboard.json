@@ -7,10 +7,10 @@
   "selection": "best",
   "coverage": {
     "total": 103,
-    "withResults": 19,
-    "complete": 12,
-    "failedOrIncomplete": 7,
-    "noVisibleResult": 84
+    "withResults": 20,
+    "complete": 14,
+    "failedOrIncomplete": 6,
+    "noVisibleResult": 83
   },
   "entries": [
     {
@@ -94,6 +94,26 @@
       "caseSetIdentity": null
     },
     {
+      "id": "p3-1c3ce6365852f299",
+      "name": "LiJingbei",
+      "submittedAt": "2026-11-27T16:55:04+08:00",
+      "metrics": {
+        "rounds": 4203461,
+        "movementSteps": 5746962
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/LiJingbei523150910065project/issues/6",
+        "runId": "04168C80",
+        "configuration": "p3-release",
+        "commit": "3da3167a2c701cbbf013f011524e9b44384326f4",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
       "id": "p3-749d82b705e2b083",
       "name": "LiJinshuo",
       "submittedAt": "2026-11-26T14:38:44+08:00",
@@ -106,6 +126,26 @@
         "runId": "1FE082C5",
         "configuration": "p3-release",
         "commit": "a38fbaf3b66e9bca196762df45e3a65762d5362a",
+        "event": "release",
+        "tag": "p3",
+        "workflow": "release.yaml@refs/tags/p3"
+      },
+      "released": true,
+      "caseSetIdentity": null
+    },
+    {
+      "id": "p3-fe8c106104ae6177",
+      "name": "SangXiyuan",
+      "submittedAt": "2026-11-27T18:15:15+08:00",
+      "metrics": {
+        "rounds": 5094894,
+        "movementSteps": 7190913
+      },
+      "source": {
+        "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/SangXiyuan523051910040project/issues/6",
+        "runId": "4D0BEBC0",
+        "configuration": "p3-release",
+        "commit": "f67ecd93d015e4a168fe4dd057344f55b726c82f",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -255,5 +295,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-27T08:29:58.370737+00:00"
+  "updatedAt": "2026-11-27T11:28:52.875516+00:00"
 }
