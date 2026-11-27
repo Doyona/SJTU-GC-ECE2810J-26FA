@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-27T07:27:07.650236+00:00",
+      "updatedAt": "2026-11-27T08:29:58.370737+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -275,10 +275,10 @@
           ],
           "coverage": {
             "total": 103,
-            "withResults": 18,
+            "withResults": 19,
             "complete": 12,
-            "failedOrIncomplete": 6,
-            "noVisibleResult": 85
+            "failedOrIncomplete": 7,
+            "noVisibleResult": 84
           }
         }
       ],
