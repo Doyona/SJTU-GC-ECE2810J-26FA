@@ -156,16 +156,16 @@
     {
       "id": "p3-a00b140b932230b5",
       "name": "SuoJunkai",
-      "submittedAt": "2026-11-25T16:53:01+08:00",
+      "submittedAt": "2026-11-29T02:04:38+08:00",
       "metrics": {
-        "rounds": 2333207,
-        "movementSteps": 4164950
+        "rounds": 1892940,
+        "movementSteps": 3542402
       },
       "source": {
         "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/SuoJunkai524370910105project/issues/6",
-        "runId": "159A6510",
+        "runId": "36A432C1",
         "configuration": "p3-release",
-        "commit": "caef916b46ae70b13939e3e94b7dc49a6da3180e",
+        "commit": "d55d5ac18d9a5da20e3d01857214d004957da8cf",
         "event": "release",
         "tag": "p3",
         "workflow": "release.yaml@refs/tags/p3"
@@ -335,5 +335,5 @@
     }
   ],
   "yearId": "2026-fall",
-  "updatedAt": "2026-11-28T16:11:57.689370+00:00"
+  "updatedAt": "2026-11-28T18:13:17.625484+00:00"
 }
