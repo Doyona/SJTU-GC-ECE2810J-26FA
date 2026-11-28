@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-28T10:03:25.134440+00:00",
+      "updatedAt": "2026-11-28T16:11:57.689370+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -193,6 +193,26 @@
               "caseSetIdentity": null
             },
             {
+              "id": "p3-44e393b18d454523",
+              "name": "WangSizhe",
+              "submittedAt": "2026-11-28T20:26:53+08:00",
+              "metrics": {
+                "rounds": 3775150,
+                "movementSteps": 7225007
+              },
+              "source": {
+                "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/WangSizhe524370910277project/issues/6",
+                "runId": "9A5ACA4E",
+                "configuration": "p3-release",
+                "commit": "13aead493bb091f5580638487edc31cfc48f2898",
+                "event": "release",
+                "tag": "p3",
+                "workflow": "release.yaml@refs/tags/p3"
+              },
+              "released": true,
+              "caseSetIdentity": null
+            },
+            {
               "id": "p3-6162559652199b53",
               "name": "WuDayu",
               "submittedAt": "2026-11-26T15:49:00+08:00",
@@ -335,10 +355,10 @@
           ],
           "coverage": {
             "total": 103,
-            "withResults": 21,
-            "complete": 15,
-            "failedOrIncomplete": 6,
-            "noVisibleResult": 82
+            "withResults": 23,
+            "complete": 16,
+            "failedOrIncomplete": 7,
+            "noVisibleResult": 80
           }
         }
       ],
