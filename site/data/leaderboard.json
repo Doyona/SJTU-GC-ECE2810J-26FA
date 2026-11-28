@@ -4,7 +4,7 @@
   "years": [
     {
       "demo": false,
-      "updatedAt": "2026-11-27T19:02:43.298806+00:00",
+      "updatedAt": "2026-11-28T10:03:25.134440+00:00",
       "projects": [
         {
           "id": "project-03",
@@ -95,16 +95,16 @@
             {
               "id": "p3-ed635edfe3924909",
               "name": "LeiRuoxin",
-              "submittedAt": "2026-11-23T21:55:54+08:00",
+              "submittedAt": "2026-11-28T17:29:48+08:00",
               "metrics": {
-                "rounds": 4737075,
-                "movementSteps": 6689486
+                "rounds": 4719811,
+                "movementSteps": 6618426
               },
               "source": {
                 "issue": "https://focs.gc.sjtu.edu.cn/git/ece281s1/LeiRuoxin524370910205project/issues/6",
-                "runId": "3BA88CCF",
+                "runId": "69A98BE2",
                 "configuration": "p3-release",
-                "commit": "4eea8254f9f2067c185bcb9dedd736d754952bdd",
+                "commit": "345fd3d73194939e28b721f1efcf3cfa7245577a",
                 "event": "release",
                 "tag": "p3",
                 "workflow": "release.yaml@refs/tags/p3"
